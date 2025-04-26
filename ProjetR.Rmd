@@ -4,7 +4,7 @@ author: ""
 output:
   html_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 2
     number_sections: true
     theme: flatly
     highlight: tango
@@ -22,6 +22,7 @@ library(crayon)
 library(ggplot2)
 library(plotly)
 library(forcats)
+library(corrplot)
 ```
 
 
@@ -127,7 +128,8 @@ Loyers <- ggplot(data = dataDakar, aes(x = Loyer)) +
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 14)
   ) +
-  scale_x_continuous(breaks = seq(0, max(dataDakar$Loyer), by = 100))  
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
 ggplotly(Loyers)
 
@@ -150,20 +152,24 @@ ggplotly(Loyers)
 <br>
 
 ```{r, echo=FALSE}
-p <- ggplot(data = dataDakar, aes(x = "", y = Loyer)) + 
-  geom_boxplot(fill = "#4682B4", color = "black") +
+p <- ggplot(data = dataDakar, aes(x = "", y = Loyer, fill = "Loyer")) + 
+  geom_boxplot(color = "black") +
   labs(title = "Boîte à moustache loyers",
        x = "",
-       y = "Loyer") +
+       y = "Loyer",
+       fill = "Type de valeur") +  
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
     axis.text.x = element_text(size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 14)
-  )
+  ) +
+  scale_fill_manual(values = "#4682B4") + 
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
 ggplotly(p)
+
 
 ```
 
@@ -195,7 +201,9 @@ DistributionSurfTerrain <- ggplot(data = dataDakar, aes(x = SurfTerrain)) +
     axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 14)
-  )
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
 ggplotly(DistributionSurfTerrain)
 ```
@@ -207,18 +215,21 @@ ggplotly(DistributionSurfTerrain)
 <br>
 
 ```{r, echo=FALSE}
-BoiteMoustacheSurfTerrain <- ggplot(data = dataDakar, aes(x = "", y = SurfTerrain)) + 
-  geom_boxplot(fill = "#4682B4", color = "black") +
+BoiteMoustacheSurfTerrain <- ggplot(data = dataDakar, aes(x = "", y = SurfTerrain, fill = "SurfTerrain")) + 
+  geom_boxplot(color = "black") +
   labs(title = "Boîte à moustaches de SurfTerrain",
        x = "",
-       y = "SurfTerrain") +
+       y = "SurfTerrain",
+       fill = "Type de valeur") +
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
     axis.text.x = element_text(size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 12)
-  )
+  ) +
+  scale_fill_manual(values = "#4682B4") +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
 ggplotly(BoiteMoustacheSurfTerrain)
 ```
@@ -249,7 +260,13 @@ DistributionNbPieces <- ggplot(data = dataDakar, aes(x = NbPieces)) +
     axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 14)
-  )
+  ) +
+  scale_x_continuous(
+  breaks = scales::pretty_breaks(n = 10),
+  expand = c(0, 0),
+  limits = c(0, 22)
+ )+
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
 ggplotly(DistributionNbPieces)
 ```
@@ -266,17 +283,24 @@ ggplotly(DistributionNbPieces)
 
 
 ```{r, echo=FALSE, warning=FALSE}
-BoiteMoustacheNbPieces <- ggplot(data = dataDakar, aes(x = "", y = NbPieces)) + 
-  geom_boxplot(fill = "#4682B4", color = "black") +
+BoiteMoustacheNbPieces <- ggplot(data = dataDakar, aes(x = "", y = NbPieces, fill = "NbPieces")) + 
+  geom_boxplot(color = "black") +
   labs(title = "Boîte à moustaches de NbPieces",
        x = "",
-       y = "NbPieces") +
+       y = "NbPieces",
+       fill = "Type de valeur") +
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
     axis.text.x = element_text(size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 12)
+  ) +
+  scale_fill_manual(values = "#4682B4") +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    expand = c(0, 0),
+    limits = c(0, 22)
   )
 
 ggplotly(BoiteMoustacheNbPieces)
@@ -306,7 +330,9 @@ DistributionSurfHabitables <- ggplot(data = dataDakar, aes(x = SurfHabitable)) +
     axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 14)
-  )
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
 ggplotly(DistributionSurfHabitables)
 ```
@@ -320,17 +346,24 @@ ggplotly(DistributionSurfHabitables)
 <br>
 
 ```{r, echo=FALSE, warning=FALSE}
-BoiteMoustacheSurfHabitables <- ggplot(data = dataDakar, aes(x = "", y = SurfHabitable)) + 
-  geom_boxplot(fill = "#4682B4", color = "black") +
+BoiteMoustacheSurfHabitables <- ggplot(data = dataDakar, aes(x = "", y = SurfHabitable, fill = "SurfHabitable")) + 
+  geom_boxplot(color = "black") +
   labs(title = "Boîte à moustaches de SurfHabitables",
        x = "",
-       y = "SurfHabitable") +
+       y = "SurfHabitable",
+       fill = "Type de valeur") +
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
     axis.text.x = element_text(size = 12),
     axis.text.y = element_text(size = 12),
     axis.title = element_text(face = "bold", size = 12)
+  ) +
+  scale_fill_manual(values = "#4682B4") +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    expand = c(0, 0),
+    limits = c(0, 500)
   )
 
 ggplotly(BoiteMoustacheSurfHabitables)
@@ -340,27 +373,362 @@ ggplotly(BoiteMoustacheSurfHabitables)
 <br>
 
 
-<p style="text-indent: 20px;">Pour conclure, cette analyse du marché immobilier à Dakar a permis de mieux comprendre la répartition des loyers, des surfaces et du nombre de pièces. Nous avons observé que la majorité des loyers se situent dans une plage modeste, entre <strong>60 000</strong> et <strong>500 000 FCFA</strong>, mais qu'il existe également une forte disparité avec des loyers très élevés allant jusqu'à <strong>2 100 000 FCFA</strong>. Cela souligne les différences importantes entre les différents types de logements disponibles dans la ville.</p> 
+<p style="text-indent: 20px;"> Pour conclure, cette analyse du marché immobilier à Dakar a permis de mieux comprendre la répartition des loyers, des surfaces et du nombre de pièces. Nous avons observé que la majorité des loyers se situent dans une plage modeste, entre <strong>60 000</strong> et <strong>500 000 FCFA</strong>, mais qu'il existe également une forte disparité avec des loyers très élevés allant jusqu'à <strong>2 100 000 FCFA</strong>. Cela souligne les différences importantes entre les différents types de logements disponibles dans la ville.</p> 
 
 <p>La <strong>surface des terrains</strong>, le <strong>nombre de pièces</strong> et la <strong>surface habitable</strong> ont un impact direct sur le loyer, ce qui confirme que les logements plus grands, avec plus de pièces et une surface plus étendue, sont généralement plus chers. Les données montrent également que la majorité des terrains sont de petite taille, généralement compris entre <strong>30 m²</strong> et <strong>300 m²</strong>, ce qui est cohérent avec les loyers plus accessibles dans ces zones.</p> 
 
 <p>Cette analyse met en évidence les disparités existantes sur le marché immobilier dakarois, notamment en ce qui concerne l'accessibilité des <strong>loyers</strong>.</p>
+<br>
 
 # __**Analyse Du Loyer**__
+
+<p style="text-indent: 20px;"> L'analyse du loyer est cruciale pour comprendre les dynamiques du marché immobilier à Dakar. Elle permet d'identifier les facteurs influençant les prix, tels que la surface habitable, le nombre de pièces, le type de logement ou encore le standing. C'est pourquoi nous allons examiner l'impact de chacun de ces facteurs sur le loyer, afin de mieux comprendre leur influence sur les prix du marché.</p>
+
 ## __**Relation entre le loyer et la sufrace habitable**__
+
+<p style="text-indent: 20px;"> Ce graphique montre la relation entre la surface habitable et le loyer à Dakar. On voit clairement que, de manière générale, plus un logement est grand, plus le loyer est élevé. Cette tendance est bien représentée par la ligne droite qui suit la répartition des points. Autrement dit, la surface a un impact sur le prix du loyer.</p>
+
+<p> Mais en regardant de plus près, on remarque que les points sont assez dispersés autour de cette ligne. Certains logements ont des loyers très élevés malgré une petite surface, tandis que d'autres, plus grands, restent relativement abordables. Ça montre que la surface ne suffit pas à elle seule pour expliquer le loyer. Il y a sûrement d’autres éléments qui entrent en jeu, comme le quartier, le type de logement, ou encore les équipements disponibles.</p>
+
+<p> En résumé, même si la surface influence clairement le loyer, elle n’explique pas tout. Ce graphique nous aide à mieux comprendre cette relation, tout en soulignant l’importance d’analyser d’autres facteurs. C’est pourquoi il est pertinent d’examiner d’autres variables dans la suite de cette analyse, afin d’obtenir une compréhension plus globale du marché immobilier à Dakar.</p>
+<br>
+
+
+```{r, echo=FALSE}
+RelationLoyerSurfHabitable <- ggplot(data = dataDakar, 
+                                      aes(x=SurfHabitable, y = Loyer)) +
+                                      geom_point(color="#4682B4") +
+                                      geom_smooth(method = "lm", color = "#4682B4") +
+                                      labs(title = "Relation entre le Loyer et la surface Habitable",
+                                         x = "SurfHabitables",
+                                         y = "Loyer") +
+                                    theme_minimal(base_size = 14) +
+                                    theme(
+                                      plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+                                      axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+                                      axis.text.y = element_text(size = 12),
+                                      axis.title = element_text(face = "bold", size = 14)
+                                    ) +
+                                    scale_x_continuous(breaks = seq(0, 450, by = 50),
+                                                      limits = c(0, 450))+
+                                    scale_y_continuous(breaks = seq(0, max(dataDakar$Loyer), by = 250)) 
+                                   
+
+ggplotly(RelationLoyerSurfHabitable)  
+```
+
 ## __**Relation entre le loyer et le nombre de pièces**__
+
+<p style="text-indent: 20px;"> Ce graphique montre la relation entre le nombre de pièces d’un logement et le loyer à Dakar. Là aussi, une tendance se dessine : en général, plus un logement a de pièces, plus son loyer est élevé. La ligne de régression suit cette logique, même si la pente est moins marquée que pour la surface habitable.</p> <p>Mais comme pour la surface, les choses ne sont pas si simples. Certains logements avec peu de pièces affichent des loyers élevés, tandis que d’autres, plus spacieux en nombre de pièces, restent relativement abordables. Cela confirme que le nombre de pièces ne suffit pas, à lui seul, pour expliquer le montant du loyer. Il faut probablement tenir compte d’autres éléments, comme le type de logement ou son standing.</p> 
+
+<p>C’est pourquoi il est pertinent d’approfondir l’analyse en s’intéressant au type de logement et au standing.</p>
+<br>
+
+```{r, echo=FALSE, warning=FALSE}
+RelationLoyerNbPiece <- ggplot(data = dataDakar, 
+                              aes(x=NbPieces, y = Loyer)) +
+                              geom_point(color="#4682B4") +
+                              geom_smooth(method = "lm", color = "#4682B4") +
+                              labs(title = "Relation entre le Loyer et le nombre de pièces",
+                                   x = "NbPieces",
+                                   y = "Loyer") +
+                              theme_minimal(base_size = 14) +
+                              theme(
+                                plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+                                axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+                                axis.text.y = element_text(size = 12),
+                                axis.title = element_text(face = "bold", size = 14)
+                              ) +
+                              scale_x_continuous(breaks = seq(0, max(dataDakar$NbPieces), by = 2.5),
+                                                 limits = c(0, max(dataDakar$NbPieces)))
+                                   
+
+ggplotly(RelationLoyerNbPiece) 
+```
+
+<br>
+
+
 ## __**Relation entre le loyer et le type**__
+
+<p style="text-indent: 20px;"> Ce graphique décris la relation entre le loyer et le type (Appartement ou Villa). On remarque que, en moyenne, les villas sont bien plus chères que les appartements. Ce qui ressort surtout, c’est la grande variation des loyers pour les villas : certains peuvent atteindre des sommes très élevées, tandis que ceux des appartements restent dans une fourchette plus modeste et concentrée. Cette différence s'explique probablement par des facteurs comme la taille, le confort ou encore les prestations souvent associées aux villas. En résumé, le type de logement a donc un impact direct sur le montant du loyer.</p>
+
+
+```{r, echo=FALSE}
+
+LoyerType <- ggplot(data = dataDakar, aes(x = Type, y = Loyer, fill = factor(Type))) + 
+  geom_boxplot() +
+  labs(title = "Relation entre le Loyer et Type",
+       x = "Type",
+       y = "Loyer",
+       fill = "Type") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(LoyerType)
+
+
+```
+
 ## __**Relation entre le loyer et le standing**__
 
 
+<p style="text-indent: 20px;"> Ce graphique porte sur le standing du logement, c’est-à-dire son niveau de confort et de qualité. Là aussi, l'écart est très net. Les logements dits « de standing » affichent des loyers bien plus élevés que ceux qui ne bénéficient pas de ce statut. La médiane est plus haute, les valeurs extrêmes sont beaucoup plus élevées, et l'ensemble de la distribution est clairement décalé vers le haut. Cela confirme que le standing joue un rôle clé dans la fixation du loyer, ce qui paraît tout à fait logique : un logement mieux équipé, plus moderne ou mieux entretenu justifie un prix plus élevé.
+<br>
+
+```{r, echo=FALSE}
+LoyerStanding <- ggplot(data = dataDakar, aes(x = Standing, y = Loyer, fill = factor(Standing))) + 
+  geom_boxplot() +
+  labs(title = "Relation entre le Loyer et Standing",
+       x = "Standing",
+       y = "Loyer",
+       fill = "Standing") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(LoyerStanding)
+
+```
+<br>
+
+<p style="text-indent: 20px;"> Pour conclure, la surface habitable, le nombre de pièces, le type et le standing du logement influencent tous, à différents degrés, le niveau du loyer à Dakar. Plus un logement est grand, dispose de nombreuses pièces, appartient à la catégorie villa et présente un bon standing, plus son loyer a de chances d’être élevé. Ces variables, mises bout à bout, permettent donc de mieux comprendre la logique de tarification sur le marché locatif dakarois.</p>
 
 # __**Analyse des Corrélations**__
 ## __**Corrélation entre toutes les variables**__
+
+<br>
+<p style="font-size: 24px;">Matrice de corrélation</p>
+<br>
+
+```{r, echo=FALSE, fig.width=12, fig.height=10}
+
+dataDakar$RatioHabitableTerrain <- dataDakar$SurfHabitable / dataDakar$SurfTerrain
+dataDakar$PiecesParM2 <- dataDakar$NbPieces / dataDakar$SurfHabitable
+dataDakar$EquipementScore <- scale(dataDakar$NbSDB + dataDakar$NbCuis + dataDakar$NbWC)
+dataDakar$ConfortScore <- scale(dataDakar$SurfHabitable / dataDakar$NbPieces)
+
+
+variables <- c("Loyer", "SurfTerrain", "SurfHabitable", "SurfPiecResid", 
+               "NbPieces", "NbPiecesResid", "NbSDB", "NbChamBur", 
+               "NbSalonsSAM", "NbWC", "NbCuis", "RatioHabitableTerrain", 
+               "PiecesParM2", "EquipementScore", "ConfortScore")
+
+cor_matrix <- cor(dataDakar[, variables])
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,          
+         addCoef.col = "black", 
+         number.cex = 0.7,      
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,         
+         title = "Matrice de corrélation - Toutes les variables",
+         mar = c(0,0,2,0))     
+```
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **SurfTerrain** : forte corrélation positive (**0.79**) ; cela signifie que plus la surface du terrain est grande, plus le loyer demandé est élevé.
+* **SurfHabitable** : forte corrélation positive (**0.74**) ; donc, plus la surface habitable est importante, plus le logement est cher.
+* **NbSDB (Nombre de salles de bain)** : corrélation positive (**0.70**) ; les logements avec davantage de salles de bain tendent à avoir un loyer plus élevé.
+* **NbChamBur (Nombre de chambres ou bureaux)** : corrélation positive (**0.66**) ; plus un logement propose d'espaces nuit ou de travail, plus son loyer augmente.
+* **NbSalonsSAM (Nombre de salons/salles à manger)** : corrélation positive (**0.72**) ; un logement avec plusieurs espaces de vie est plus valorisé en loyer.
+
+<br>
+<p style="font-size: 24px;">Analyse des facteurs de qualité</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des facteurs de qualité :</p>
+
+* **EquipementScore** : corrélation forte avec le loyer (**0.79**) ; un logement mieux équipé est associé à un loyer plus élevé.
+* **ConfortScore** : corrélation très forte avec plusieurs variables clés (**> 0.90**) ; cela indique que le niveau de confort général impacte fortement la valeur locative.
+* Le **score de confort** est directement lié à la qualité de l'aménagement intérieur, comme le nombre de pièces et d'équipements.
+
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Surface et organisation :**
+  * **SurfHabitable** et **NbPieces** : corrélation extrêmement forte (**0.99**) ; cela signifie que plus un logement est grand, plus il compte de pièces.
+  * **SurfHabitable** et **SurfTerrain** : forte corrélation (**0.83**) ; en général, un terrain plus vaste accueille une habitation plus grande.
+  * **RatioHabitableTerrain** : corrélation négative avec la surface du terrain (**-0.63**) ; un ratio faible traduit souvent de grandes parcelles peu construites.
+
+* **Équipements :**
+  * **NbSDB** et **NbWC** : corrélation forte (**0.74**) ; les logements ayant plusieurs salles de bain disposent aussi généralement de plusieurs WC.
+  * **NbCuis (Nombre de cuisines)** : corrélation plus faible (**entre -0.22 et -0.36**) ; la variation du nombre de cuisines influence peu le reste des caractéristiques.
+
+* **Confort et qualité :**
+  * **EquipementScore** : fortement corrélé à **SurfHabitable** (**0.79**) et à **NbPieces** (**0.77**) ; donc, plus un logement est spacieux et dispose de nombreuses pièces, plus il est bien équipé.
+
+* **Corrélation la plus forte :** **0.99** entre **SurfHabitable** et **NbPieces** ; un logement plus grand implique presque systématiquement plus de pièces.
+
+
 ## __**Corrélation entre la surface et les pièces**__
+
+```{r, echo=FALSE}
+
+dataDakar$RatioHabitableTerrain <- dataDakar$SurfHabitable / dataDakar$SurfTerrain
+dataDakar$PiecesParM2 <- dataDakar$NbPieces / dataDakar$SurfHabitable
+
+variables <- c("Loyer", "SurfTerrain", "SurfHabitable", "SurfPiecResid", 
+               "NbPieces", 
+               "RatioHabitableTerrain", 
+               "PiecesParM2")
+
+cor_matrix <- cor(dataDakar[, variables])
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,          
+         addCoef.col = "black", 
+         number.cex = 0.7,      
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,         
+         title = "Matrice de corrélation - Toutes les variables",
+         mar = c(0,0,2,0))     
+```
+
+<br>
+<p style="font-size: 24px;">Matrice de corrélation</p>
+<br>
+
+
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **SurfTerrain** : corrélation forte positive (0.79)
+* **NbWC** : corrélation positive (0.74)
+* **SurfHabitable** : corrélation forte positive (0.74)
+* Les villas ont en moyenne un loyer 317.2% plus élevé que les appartements
+* Un logement avec standing coûte en moyenne 372.4% plus cher
+
+<br>
+<p style="font-size: 24px;">Analyse des facteurs de qualité</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des facteurs de qualité :</p>
+
+* Score de confort moyen : 2.2 sur 6
+* Score d'équipement moyen : 3.0 sur 3
+* Les logements de standing ont :
+	* 27.8% de score de confort en plus
+  * 1.5% de score d'équipement en plus
+  
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Surface et organisation :**
+  * La surface habitable et le nombre de pièces sont fortement corrélés (0.95)
+  * Le ratio habitable/terrain indique l'efficacité d'utilisation de l'espace
+  
+* **Corrélation la plus forte :** 0.95
+
 ## __**Corrélation avec les équipements**__
+
+```{r, echo=FALSE}
+
+
+dataDakar$EquipementScore <- scale(dataDakar$NbSDB + dataDakar$NbCuis + dataDakar$NbWC)
+
+
+
+variables <- c("Loyer","NbSDB", "NbWC", "NbCuis", "EquipementScore")
+
+cor_matrix <- cor(dataDakar[, variables])
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,          
+         addCoef.col = "black", 
+         number.cex = 0.7,      
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,         
+         title = "Matrice de corrélation - Toutes les variables",
+         mar = c(0,0,2,0))     
+```
+
 ## __**Corrélation avec les critères de confort**__
+
+```{r, echo=FALSE}
+dataDakar$ConfortScore <- rowSums(dataDakar[c("Jardin", "Cour", "Piscine", "Garage", "Egout", "HiTech")] == "Oui", na.rm = TRUE)
+
+confort_vars <- c("Loyer", "ConfortScore", "Standing", "Etat")
+confort_data <- dataDakar[, confort_vars]
+
+# Conversion robuste : tout ce qui n'est pas numérique devient factor puis numérique
+for (col in names(confort_data)) {
+  if (!is.numeric(confort_data[[col]])) {
+    confort_data[[col]] <- as.numeric(as.factor(confort_data[[col]]))
+  }
+}
+
+cor_matrix_confort <- cor(confort_data, use = "pairwise.complete.obs")
+
+corrplot(cor_matrix_confort,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         addCoef.col = "black", 
+         number.cex = 0.7,
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,
+         title = "Matrice de corrélation - Confort",
+         mar = c(0,0,2,0))
+```
+
 ## __**Corrélation avec la localisation**__
 
+```{r, echo=FALSE}
+localisation_vars <- c("Loyer", "DistCtrVille", "BordMer", "Commerc", "Quartier")
+localisation_data <- dataDakar[, localisation_vars]
+
+# Conversion robuste : tout ce qui n'est pas numérique devient factor puis numérique
+for (col in names(localisation_data)) {
+  if (!is.numeric(localisation_data[[col]])) {
+    localisation_data[[col]] <- as.numeric(as.factor(localisation_data[[col]]))
+  }
+}
+
+cor_matrix_localisation <- cor(localisation_data, use = "pairwise.complete.obs")
+
+corrplot(cor_matrix_localisation,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         addCoef.col = "black", 
+         number.cex = 0.7,
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,
+         title = "Matrice de corrélation - Localisation",
+         mar = c(0,0,2,0))
+```
 
 # __**Analyse par quartier**__
 
