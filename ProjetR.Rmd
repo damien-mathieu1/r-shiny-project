@@ -1,0 +1,999 @@
+---
+title: "Analyse du Marché Immobilier à Dakar"
+author: ""
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    theme: flatly
+    highlight: tango
+    df_print: paged
+---
+```{r, echo=FALSE}
+dataDakar <- read.csv(file.path(getwd(), "dakar.csv"))
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(knitr)
+library(crayon)
+library(ggplot2)
+library(plotly)
+library(forcats)
+library(corrplot)
+```
+
+
+# __**Présentation du Jeu de Données**__
+## __**Description Générale**__
+
+  <p style="text-indent: 20px;">
+    <strong>Le jeu de données présente 41 biens immobiliers locatifs situés à Dakar</strong>, détaillant pour chacun le loyer, 
+    les caractéristiques physiques (surfaces, nombre de pièces), l'état du bien, les équipements disponibles 
+    et la localisation.
+  </p>
+
+  <p>
+    Les propriétés sont réparties dans différents quartiers de la capitale sénégalaise 
+    (<strong>Mamelles, Plateau, Mermoz, Médina</strong>, etc.) avec des loyers allant de <strong>20 à 2120 (en milliers de         FCFA)</strong>, reflétant la diversité du marché immobilier dakarois.
+  </p>
+
+  <p>
+    Cette base comprend des appartements et des villas de différents niveaux de standing et d’équipement, offrant un aperçu        représentatif des logements disponibles dans cette métropole ouest-africaine.
+  </p>
+  
+  <p>
+  Dans la section suivante, nous détaillerons les variables du jeu de données à travers un tableau récapitulatif.
+  </p>
+<br>
+
+
+## __**Description des variables**__
+
+```{r, echo=FALSE}
+variables <- data.frame(
+  Nom = c(
+    "Loyer", "SurfTerrain", "SurfHabitable", "SurfPieceResid", "NbPieces", "NbPiecesResid",
+    "NbSDB", "NbChamBur", "NbSalonsSAM", "NbWC", "NbCuis", "Type", "Standing", "Etat",
+    "Jardin", "Cour", "Piscine", "Garage", "Egout", "HiTech", "DistCtrVille", "Commerc",
+    "BordMer", "Distractions", "AxeRoutier", "StandingQuartier", "QuartierAffaires", "Quartier"
+  ),
+  Description = c(
+    "Montant du loyer mensuel",
+    "Surface totale du terrain en mètres carrés",
+    "Surface habitable du logement en mètres carrés",
+    "Surface des pièces résidentielles en mètres carrés",
+    "Nombre total de pièces dans le logement",
+    "Nombre de pièces à usage résidentiel",
+    "Nombre de salles de bain",
+    "Nombre de chambres ou de bureaux",
+    "Nombre de salons ou de salles à manger",
+    "Nombre de toilettes (WC)",
+    "Nombre de cuisines",
+    "Type de logement",
+    "Indique si le logement est de standing ou non",
+    "État général du logement",
+    "Présence d’un jardin",
+    "Présence d’une cour",
+    "Présence d’une piscine",
+    "Type de garage ou présence d’un garage",
+    "Connexion au réseau d'égouts",
+    "Présence d’équipements technologiques",
+    "Distance entre le logement et le centre-ville",
+    "Proximité des commerces",
+    "Proximité de la mer",
+    "Proximité de lieux de distractions",
+    "Proximité d’un axe routier",
+    "Type de standing du quartier",
+    "Présence d’un quartier d’affaires",
+    "Nom du quartier"
+  )
+)
+
+kable(variables, "html", caption = "", 
+      table.attr = "class='table table-bordered table-dark'")
+```
+<br>
+
+# __**Visualisation Générale**__
+
+<p style="text-indent: 20px;">
+Pour mieux comprendre la situation immobilière à Dakar, nous procéderons tout d'abord à une analyse basée sur le jeu de données présenté précédemment. Cette analyse se concentrera sur les loyers, le nombre de pièces, la surface des terrains et la surface habitable des logements.
+<p>
+
+
+## __**Analyse du prix des Loyers**__
+<p style="text-indent: 20px;">
+  Afin d’obtenir une analyse précise du jeu de données sur les logements à Dakar, nous avons commencé par étudier les <strong>prix des loyers</strong>, un facteur que nous jugeons essentiel. Pour cela, nous avons utilisé un <strong>histogramme</strong>, qui permet de visualiser simplement la <strong>répartition des loyers</strong>.
+</p>
+
+<p>
+  L’histogramme révèle une <strong>forte concentration</strong> des loyers entre <strong>0 et 500 000 FCFA</strong>, ce qui indique que la majorité des logements se trouvent dans cette gamme de prix. En revanche, au-delà de cette plage, les loyers deviennent plus <strong>rares</strong>, avec une <strong>dispersion croissante</strong> des valeurs, allant jusqu’à atteindre des niveaux extrêmes proches de <strong>2 100 000 FCFA</strong>. Cette répartition montre clairement l'<strong>écart important</strong> entre les loyers les plus bas et les plus élevés.
+</p>
+<br>
+
+```{r, echo=FALSE}
+
+Loyers <- ggplot(data = dataDakar, aes(x = Loyer)) +
+  geom_histogram(fill = "#4682B4", color = "black", binwidth = 30) +  
+  labs(title = "Distribution des loyers",
+       x = "Loyer (en milliers de FCFA)",
+       y = "Nombre de logements") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(Loyers)
+
+
+```
+
+
+<br>
+<p style="text-indent: 20px;">
+  Pour compléter cette analyse, nous avons également utilisé un <strong>boxplot (boîte à moustaches)</strong>, un graphique particulièrement adapté pour étudier la distribution des <strong>loyers à Dakar</strong>. Ce graphique nous a permis de visualiser rapidement des informations clés, telles que <strong><i>la médiane, les quartiles et les valeurs extrêmes</i></strong>.
+</p>
+
+<p>
+  Grâce à cette représentation, nous avons pu identifier facilement les loyers les plus typiques, ainsi que ceux qui se situent en dehors de la norme, c’est-à-dire anormalement <strong>élevés</strong> ou <strong>bas</strong>. Ce graphique nous a ainsi offert une meilleure compréhension de la variabilité des loyers à Dakar.
+</p>
+
+<p>
+  En effet, la majorité des loyers à Dakar se situent entre 60 000 et 500 000 FCFA, avec un loyer minimal de 20 000 FCFA et un loyer maximal de 2 100 000 FCFA. La médiane des loyers étant de 190 000 FCFA, cela signifie que la moitié des loyers sont inférieurs à ce montant et l'autre moitié supérieurs. Comparée au salaire moyen de 96 206 FCFA, cette situation met en évidence un écart notable entre les revenus et les coûts du logement à Dakar. Ce déséquilibre suggère que de nombreux habitants pourraient rencontrer des difficultés pour accéder à des logements abordables.
+</p>
+<br>
+
+```{r, echo=FALSE}
+p <- ggplot(data = dataDakar, aes(x = "", y = Loyer, fill = "Loyer")) + 
+  geom_boxplot(color = "black") +
+  labs(title = "Boîte à moustache loyers",
+       x = "",
+       y = "Loyer (Millier de FCFA)",
+       fill = "Type de valeur") +  
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_fill_manual(values = "#4682B4") + 
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(p)
+
+
+```
+
+<br>
+<p style="text-indent: 30px;">
+  En conclusion, cette analyse des loyers à Dakar met en évidence une forte concentration des loyers dans une plage de prix relativement modeste, entre <strong>60 000</strong> et <strong>500 000 FCFA</strong>. Cependant, la présence de loyers très élevés, allant jusqu'à <strong>2 100 000 FCFA</strong>, révèle des disparités importantes sur le marché immobilier de la capitale. Cette variabilité, combinée au salaire moyen relativement bas, souligne un écart significatif entre les revenus des habitants et les coûts des logements, suggérant que l'accessibilité au logement demeure un défi majeur pour une grande partie de la population dakaroise.
+</p>
+<br>
+
+
+
+## __**Surface des Terrains par Logement**__
+
+<p style="text-indent: 20px;">
+  Pour compléter l’analyse des loyers, il est essentiel d’étudier la <strong>surface des terrains</strong>, un facteur fortement lié au prix du logement. Cette corrélation apparaît nettement : les <strong>loyers sont majoritairement concentrés entre 0 et 500 000 FCFA</strong>, ce qui suggère que les terrains concernés sont de <strong>petite taille</strong>. Cette hypothèse est confirmée par l’histogramme, qui montre une <strong>forte concentration des terrains entre 30 m² et 300 m²</strong>, les tailles les plus fréquentes sur le marché. Cela met en évidence le lien direct entre la surface d’un terrain et le <strong>montant du loyer</strong>.
+</p>
+<br>
+
+
+```{r, echo=FALSE, warning=FALSE}
+DistributionSurfTerrain <- ggplot(data = dataDakar, aes(x = SurfTerrain)) +
+  geom_histogram(fill = "#4682B4", color = "black", bins=30) +  
+  labs(title = "Distribution de SurfTerrain",
+       x = "SurfTerrain",
+       y = "Nombre de Logements") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(DistributionSurfTerrain)
+```
+
+<br>
+<p style="text-indent: 20px;">
+  À Dakar, la plupart des terrains ont une superficie comprise entre <strong>66 m²</strong> et <strong>264 m²</strong>, avec une <strong>médiane de 101 m²</strong>. Cela signifie que la moitié des terrains font moins de 101 m². Les surfaces varient entre <strong>19 m²</strong> et <strong>988 m²</strong>, illustrant une grande diversité. La <strong>surface moyenne</strong> affichée sur le marché est d’environ <strong>805 m²</strong>, mais elle est largement influencée par quelques très grands terrains. Cette moyenne ne reflète donc pas fidèlement la réalité, où les petites surfaces sont bien plus fréquentes.
+</p>
+<br>
+
+```{r, echo=FALSE}
+BoiteMoustacheSurfTerrain <- ggplot(data = dataDakar, aes(x = "", y = SurfTerrain, fill = "SurfTerrain")) + 
+  geom_boxplot(color = "black") +
+  labs(title = "Boîte à moustaches de SurfTerrain",
+       x = "",
+       y = "SurfTerrain",
+       fill = "Type de valeur") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 12)
+  ) +
+  scale_fill_manual(values = "#4682B4") +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(BoiteMoustacheSurfTerrain)
+```
+
+<br>
+<p style="text-indent: 20px;">
+  En résumé, la majorité des terrains à Dakar ont une surface comprise entre <strong>30 m²</strong> et <strong>300 m²</strong>, ce qui en fait les tailles les plus représentatives du marché. Cette distribution, associée aux données sur les loyers, confirme que <strong>la taille du terrain influence directement le montant du loyer</strong>, renforçant ainsi l’importance d’étudier ce facteur dans l’analyse globale du logement à Dakar.
+</p>
+<br>
+
+
+## __**Nombre de Pièces par Logement**__
+
+<p style="text-indent: 20px;">
+  Après avoir étudié les <strong>loyers</strong> et la <strong>surface des terrains</strong>, il est pertinent de s’intéresser au <strong>nombre de pièces par logement</strong>. Ce critère complète logiquement notre analyse, car il est souvent lié aux deux précédents : un logement plus grand, avec davantage de pièces, suppose en général une <strong>surface plus importante</strong> et donc un <strong>loyer plus élevé</strong>.
+</p>
+<br>
+
+```{r, echo=FALSE, warning=FALSE}
+DistributionNbPieces <- ggplot(data = dataDakar, aes(x = NbPieces)) +
+  geom_histogram(fill = "#4682B4", color = "black", bins=30) +  
+  labs(title = "Distribution de NbPieces",
+       x = "NbPieces",
+       y = "Nombre de Logements") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_x_continuous(
+  breaks = scales::pretty_breaks(n = 10),
+  expand = c(0, 0),
+  limits = c(0, 22)
+ )+
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(DistributionNbPieces)
+```
+
+<br>
+<p style="text-indent: 20px;">
+  D’après notre analyse, la majorité des logements à Dakar comptent entre <strong>8 et 14 pièces</strong>, ce qui reflète une offre adaptée à des foyers de taille moyenne à grande. La <strong>médiane</strong> de <strong>10 pièces</strong> signifie que la moitié des logements possèdent moins de 10 pièces, tandis que l’autre moitié en possèdent davantage. Les extrêmes, allant de <strong>3 pièces</strong> à <strong>20 pièces</strong>, révèlent une certaine diversité sur le marché, avec une présence plus limitée de très petits ou très grands logements.
+</p>
+
+<p>
+  Cette distribution s’inscrit dans la continuité des observations faites sur la <strong>surface des terrains</strong> et les <strong>loyers</strong>. Un nombre plus élevé de pièces implique généralement un espace plus grand et donc un loyer plus important. Cela renforce l’idée que ces trois variables <strong>loyer</strong>, <strong>surface</strong> et <strong>nombre de pièces</strong> liées.
+</p>
+<br>
+
+
+```{r, echo=FALSE, warning=FALSE}
+BoiteMoustacheNbPieces <- ggplot(data = dataDakar, aes(x = "", y = NbPieces, fill = "NbPieces")) + 
+  geom_boxplot(color = "black") +
+  labs(title = "Boîte à moustaches de NbPieces",
+       x = "",
+       y = "NbPieces",
+       fill = "Type de valeur") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 12)
+  ) +
+  scale_fill_manual(values = "#4682B4") +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    expand = c(0, 0),
+    limits = c(0, 22)
+  )
+
+ggplotly(BoiteMoustacheNbPieces)
+```
+
+<br>
+<p style="text-indent: 20px;">
+  En résumé, à Dakar, plus un logement est spacieux, plus son loyer est élevé, illustrant l’importance de la surface et de la composition du logement dans la formation des prix. Cette corrélation entre le nombre de pièces, la surface et le loyer est évidente et contribue à la compréhension des dynamiques du marché immobilier à Dakar.
+</p>
+<br>
+
+
+## __**Surface Habitable par Logement**__
+
+<p style="text-indent: 20px;"> L’analyse de la <strong>surface habitable</strong> des logements à Dakar est essentielle pour comprendre la répartition des tailles des logements et leur lien avec les loyers. Ces données permettent de mieux cerner les choix des habitants et la diversité du marché immobilier.</p>
+<br>
+
+```{r, echo=FALSE, warning=FALSE}
+DistributionSurfHabitables <- ggplot(data = dataDakar, aes(x = SurfHabitable)) +
+  geom_histogram(fill = "#4682B4", color = "black", bins=30) +  
+  labs(title = "Distribution de SurfHabitables",
+       x = "SurfHabitables",
+       y = "Nombre de Logements") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(DistributionSurfHabitables)
+```
+
+<br>
+<p style="text-indent: 20px;"> D’après notre analyse, la majorité des logements à Dakar ont une surface comprise entre <strong>66,75 m²</strong> et <strong>227,75 m²</strong>, avec une <strong>médiane de 129 m²</strong>. Les extrêmes vont de <strong>19 m²</strong> à <strong>396 m²</strong>, ce qui montre une grande diversité. </p> 
+
+<p> Il est intéressant de noter qu'un logement de <strong>19 m²</strong>, qui correspond à la surface minimale, ne possède qu'une seule <strong>pièce</strong>, comme le montre l'analyse <strong>du nombre de pièces</strong>. À l'opposé, un logement de <strong>396 m²</strong> comporte jusqu'à <strong>20 pièces</strong>, ce qui est en accord avec l’analyse <strong> du nombre de pièces</strong>. </p> 
+
+<p> Cette distribution confirme une forte corrélation entre la surface habitable et le nombre de pièces : une surface plus petite est liée à un loyer plus bas et à moins de pièces, tandis qu'une plus grande surface est associée à un loyer élevé et un nombre plus important de pièces. </p>
+<br>
+
+```{r, echo=FALSE, warning=FALSE}
+BoiteMoustacheSurfHabitables <- ggplot(data = dataDakar, aes(x = "", y = SurfHabitable, fill = "SurfHabitable")) + 
+  geom_boxplot(color = "black") +
+  labs(title = "Boîte à moustaches de SurfHabitables",
+       x = "",
+       y = "SurfHabitable",
+       fill = "Type de valeur") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 12)
+  ) +
+  scale_fill_manual(values = "#4682B4") +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    expand = c(0, 0),
+    limits = c(0, 500)
+  )
+
+ggplotly(BoiteMoustacheSurfHabitables)
+```
+
+<br>
+<br>
+
+
+<p style="text-indent: 20px;"> Pour conclure, cette analyse du marché immobilier à Dakar a permis de mieux comprendre la répartition des loyers, des surfaces et du nombre de pièces. Nous avons observé que la majorité des loyers se situent dans une plage modeste, entre <strong>60 000</strong> et <strong>500 000 FCFA</strong>, mais qu'il existe également une forte disparité avec des loyers très élevés allant jusqu'à <strong>2 100 000 FCFA</strong>. Cela souligne les différences importantes entre les différents types de logements disponibles dans la ville.</p> 
+
+<p>La <strong>surface des terrains</strong>, le <strong>nombre de pièces</strong> et la <strong>surface habitable</strong> ont un impact direct sur le loyer, ce qui confirme que les logements plus grands, avec plus de pièces et une surface plus étendue, sont généralement plus chers. Les données montrent également que la majorité des terrains sont de petite taille, généralement compris entre <strong>30 m²</strong> et <strong>300 m²</strong>, ce qui est cohérent avec les loyers plus accessibles dans ces zones.</p> 
+
+<p>Cette analyse met en évidence les disparités existantes sur le marché immobilier dakarois, notamment en ce qui concerne l'accessibilité des <strong>loyers</strong>.</p>
+<br>
+
+# __**Analyse Du Loyer**__
+
+<p style="text-indent: 20px;"> L'analyse du loyer est cruciale pour comprendre les dynamiques du marché immobilier à Dakar. Elle permet d'identifier les facteurs influençant les prix, tels que la surface habitable, le nombre de pièces, le type de logement ou encore le standing. C'est pourquoi nous allons examiner l'impact de chacun de ces facteurs sur le loyer, afin de mieux comprendre leur influence sur les prix du marché.</p>
+
+## __**Relation entre le loyer et la sufrace habitable**__
+
+<p style="text-indent: 20px;"> Ce graphique montre la relation entre la surface habitable et le loyer à Dakar. On voit clairement que, de manière générale, plus un logement est grand, plus le loyer est élevé. Cette tendance est bien représentée par la ligne droite qui suit la répartition des points. Autrement dit, la surface a un impact sur le prix du loyer.</p>
+
+<p> Mais en regardant de plus près, on remarque que les points sont assez dispersés autour de cette ligne. Certains logements ont des loyers très élevés malgré une petite surface, tandis que d'autres, plus grands, restent relativement abordables. Ça montre que la surface ne suffit pas à elle seule pour expliquer le loyer. Il y a sûrement d’autres éléments qui entrent en jeu, comme le quartier, le type de logement, ou encore les équipements disponibles.</p>
+
+<p> En résumé, même si la surface influence clairement le loyer, elle n’explique pas tout. Ce graphique nous aide à mieux comprendre cette relation, tout en soulignant l’importance d’analyser d’autres facteurs. C’est pourquoi il est pertinent d’examiner d’autres variables dans la suite de cette analyse, afin d’obtenir une compréhension plus globale du marché immobilier à Dakar.</p>
+<br>
+
+
+```{r, echo=FALSE}
+RelationLoyerSurfHabitable <- ggplot(data = dataDakar, 
+                                      aes(x=SurfHabitable, y = Loyer)) +
+                                      geom_point(color="#4682B4") +
+                                      geom_smooth(method = "lm", color = "#4682B4") +
+                                      labs(title = "Relation entre le Loyer et la surface Habitable",
+                                         x = "SurfHabitables",
+                                         y = "Loyer (Millier de FCFA)") +
+                                    theme_minimal(base_size = 14) +
+                                    theme(
+                                      plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+                                      axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+                                      axis.text.y = element_text(size = 12),
+                                      axis.title = element_text(face = "bold", size = 14)
+                                    ) +
+                                    scale_x_continuous(breaks = seq(0, 450, by = 50),
+                                                      limits = c(0, 450))+
+                                    scale_y_continuous(breaks = seq(0, max(dataDakar$Loyer), by = 250)) 
+                                   
+
+ggplotly(RelationLoyerSurfHabitable)  
+```
+
+## __**Relation entre le loyer et le nombre de pièces**__
+
+<p style="text-indent: 20px;"> Ce graphique montre la relation entre le nombre de pièces d’un logement et le loyer à Dakar. Là aussi, une tendance se dessine : en général, plus un logement a de pièces, plus son loyer est élevé. La ligne de régression suit cette logique, même si la pente est moins marquée que pour la surface habitable.</p> <p>Mais comme pour la surface, les choses ne sont pas si simples. Certains logements avec peu de pièces affichent des loyers élevés, tandis que d’autres, plus spacieux en nombre de pièces, restent relativement abordables. Cela confirme que le nombre de pièces ne suffit pas, à lui seul, pour expliquer le montant du loyer. Il faut probablement tenir compte d’autres éléments, comme le type de logement ou son standing.</p> 
+
+<p>C’est pourquoi il est pertinent d’approfondir l’analyse en s’intéressant au type de logement et au standing.</p>
+<br>
+
+```{r, echo=FALSE, warning=FALSE}
+RelationLoyerNbPiece <- ggplot(data = dataDakar, 
+                              aes(x=NbPieces, y = Loyer)) +
+                              geom_point(color="#4682B4") +
+                              geom_smooth(method = "lm", color = "#4682B4") +
+                              labs(title = "Relation entre le Loyer et le nombre de pièces",
+                                   x = "NbPieces",
+                                   y = "Loyer (Millier de FCFA)") +
+                              theme_minimal(base_size = 14) +
+                              theme(
+                                plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+                                axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+                                axis.text.y = element_text(size = 12),
+                                axis.title = element_text(face = "bold", size = 14)
+                              ) +
+                              scale_x_continuous(breaks = seq(0, max(dataDakar$NbPieces), by = 2.5),
+                                                 limits = c(0, max(dataDakar$NbPieces)))
+                                   
+
+ggplotly(RelationLoyerNbPiece) 
+```
+
+<br>
+
+
+## __**Relation entre le loyer et le type**__
+
+<p style="text-indent: 20px;"> Ce graphique décris la relation entre le loyer et le type (Appartement ou Villa). On remarque que, en moyenne, les villas sont bien plus chères que les appartements. Ce qui ressort surtout, c’est la grande variation des loyers pour les villas : certains peuvent atteindre des sommes très élevées, tandis que ceux des appartements restent dans une fourchette plus modeste et concentrée. Cette différence s'explique probablement par des facteurs comme la taille, le confort ou encore les prestations souvent associées aux villas. En résumé, le type de logement a donc un impact direct sur le montant du loyer.</p>
+
+
+```{r, echo=FALSE}
+
+LoyerType <- ggplot(data = dataDakar, aes(x = Type, y = Loyer, fill = factor(Type))) + 
+  geom_boxplot() +
+  labs(title = "Relation entre le Loyer et Type",
+       x = "Type",
+       y = "Loyer (Millier de FCFA)",
+       fill = "Type") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(LoyerType)
+
+
+```
+
+## __**Relation entre le loyer et le standing**__
+
+
+<p style="text-indent: 20px;"> Ce graphique porte sur le standing du logement, c’est-à-dire son niveau de confort et de qualité. Là aussi, l'écart est très net. Les logements dits « de standing » affichent des loyers bien plus élevés que ceux qui ne bénéficient pas de ce statut. La médiane est plus haute, les valeurs extrêmes sont beaucoup plus élevées, et l'ensemble de la distribution est clairement décalé vers le haut. Cela confirme que le standing joue un rôle clé dans la fixation du loyer, ce qui paraît tout à fait logique : un logement mieux équipé, plus moderne ou mieux entretenu justifie un prix plus élevé.
+<br>
+
+```{r, echo=FALSE}
+LoyerStanding <- ggplot(data = dataDakar, aes(x = Standing, y = Loyer, fill = factor(Standing))) + 
+  geom_boxplot() +
+  labs(title = "Relation entre le Loyer et Standing",
+       x = "Standing",
+       y = "Loyer (Millier de FCFA)",
+       fill = "Standing") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold", size = 14)
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
+
+ggplotly(LoyerStanding)
+
+```
+<br>
+
+<p style="text-indent: 20px;"> Pour conclure, la surface habitable, le nombre de pièces, le type et le standing du logement influencent tous, à différents degrés, le niveau du loyer à Dakar. Plus un logement est grand, dispose de nombreuses pièces, appartient à la catégorie villa et présente un bon standing, plus son loyer a de chances d’être élevé. Ces variables, mises bout à bout, permettent donc de mieux comprendre la logique de tarification sur le marché locatif dakarois.</p>
+
+# __**Analyse des Corrélations**__
+## __**Corrélation entre toutes les variables**__
+
+<br>
+<p style="font-size: 24px;">Matrice de corrélation</p>
+<br>
+
+```{r, echo=FALSE, fig.width=12, fig.height=10}
+
+dataDakar$RatioHabitableTerrain <- dataDakar$SurfHabitable / dataDakar$SurfTerrain
+dataDakar$PiecesParM2 <- dataDakar$NbPieces / dataDakar$SurfHabitable
+dataDakar$EquipementScore <- scale(dataDakar$NbSDB + dataDakar$NbCuis + dataDakar$NbWC)
+dataDakar$ConfortScore <- scale(dataDakar$SurfHabitable / dataDakar$NbPieces)
+
+
+variables <- c("Loyer", "SurfTerrain", "SurfHabitable", "SurfPiecResid", 
+               "NbPieces", "NbPiecesResid", "NbSDB", "NbChamBur", 
+               "NbSalonsSAM", "NbWC", "NbCuis", "RatioHabitableTerrain", 
+               "PiecesParM2", "EquipementScore", "ConfortScore")
+
+cor_matrix <- cor(dataDakar[, variables])
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,          
+         addCoef.col = "black", 
+         number.cex = 0.7,      
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,         
+         title = "Matrice de corrélation - Toutes les variables",
+         mar = c(0,0,2,0))     
+```
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **SurfTerrain** : forte corrélation positive (**0.79**) ; cela signifie que plus la surface du terrain est grande, plus le loyer demandé est élevé.
+* **SurfHabitable** : forte corrélation positive (**0.74**) ; donc, plus la surface habitable est importante, plus le logement est cher.
+* **NbSDB (Nombre de salles de bain)** : corrélation positive (**0.70**) ; les logements avec davantage de salles de bain tendent à avoir un loyer plus élevé.
+* **NbChamBur (Nombre de chambres ou bureaux)** : corrélation positive (**0.59**) ; plus un logement propose d'espaces nuit ou de travail, plus son loyer augmente.
+* **NbSalonsSAM (Nombre de salons/salles à manger)** : corrélation positive (**0.66**) ; un logement avec plusieurs espaces de vie est plus valorisé en loyer.
+
+<br>
+<p style="font-size: 24px;">Analyse des facteurs de qualité</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des facteurs de qualité :</p>
+
+* **EquipementScore** : corrélation forte avec le loyer (**0.76**) ; un logement mieux équipé est associé à un loyer plus élevé.
+* **ConfortScore** : corrélation très forte avec plusieurs variables clés (**> 0.90**) ; cela indique que le niveau de confort général impacte fortement la valeur locative.
+* Le **score de confort** est directement lié à la qualité de l'aménagement intérieur, comme le nombre de pièces et d'équipements.
+
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Surface et organisation :**
+  * **SurfHabitable** et **NbPieces** : corrélation extrêmement forte (**0.95**) ; cela signifie que plus un logement est grand, plus il compte de pièces.
+  * **SurfHabitable** et **SurfTerrain** : forte corrélation (**0.83**) ; en général, un terrain plus vaste accueille une habitation plus grande.
+  * **RatioHabitableTerrain** : corrélation négative avec la surface du terrain (**-0.63**) ; un ratio faible traduit souvent de grandes parcelles peu construites.
+
+* **Équipements :**
+  * **NbSDB** et **NbWC** : corrélation forte (**0.80**) ; les logements ayant plusieurs salles de bain disposent aussi généralement de plusieurs WC.
+  * **NbCuis (Nombre de cuisines)** : corrélation plus faible (**entre 0.27 et 0.13**) ; la variation du nombre de cuisines influence peu le reste des caractéristiques.
+
+* **Confort et qualité :**
+  * **EquipementScore** : fortement corrélé à **SurfHabitable** (**0.79**) et à **NbPieces** (**0.77**) ; donc, plus un logement est spacieux et dispose de nombreuses pièces, plus il est bien équipé.
+
+* **Corrélation la plus forte :** **0.99** entre **SurfHabitable** et **NbPieces** ; un logement plus grand implique presque systématiquement plus de pièces.
+
+
+## __**Corrélation entre la surface et les pièces**__
+
+```{r, echo=FALSE}
+
+dataDakar$RatioHabitableTerrain <- dataDakar$SurfHabitable / dataDakar$SurfTerrain
+dataDakar$PiecesParM2 <- dataDakar$NbPieces / dataDakar$SurfHabitable
+
+variables <- c("Loyer", "SurfTerrain", "SurfHabitable", "SurfPiecResid", 
+               "NbPieces", 
+               "RatioHabitableTerrain", 
+               "PiecesParM2")
+
+cor_matrix <- cor(dataDakar[, variables])
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,          
+         addCoef.col = "black", 
+         number.cex = 0.7,      
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,         
+         title = "Matrice de corrélation - surface et les pièces",
+         mar = c(0,0,2,0))     
+```
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **SurfTerrain** : forte corrélation positive (**0.79**) ; plus la surface du terrain est grande, plus le loyer demandé est élevé.
+* **SurfHabitable** : corrélation positive significative (**0.74**) ; la surface habitable détermine le prix du loyer.
+* **SurfPieceResid** : corrélation positive modérée (**0.57**) ; la surface des pièces résidentielles influence le loyer, mais moins fortement que la surface totale.
+* **NbPieces** : corrélation positive forte (**0.70**) ; le nombre de pièces est fortement associé à un loyer plus élevé.
+* **RatioHabitableTerrain** : corrélation négative faible (**-0.38**) ; un ratio plus faible entre la surface habitable et le terrain est légèrement associé à des loyers plus élevés.
+* **PiecesParM2** : corrélation négative modérée (**-0.55**) ; moins de pièces par mètre carré (donc des pièces plus grandes) est associé à des loyers plus élevés.
+
+<br>
+<p style="font-size: 24px;">Analyse des facteurs de surface</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Relations entre les différentes surfaces :</p>
+
+* **SurfTerrain** et **SurfHabitable** : corrélation très forte (**0.83**) ; les propriétés avec de grands terrains ont généralement de plus grandes surfaces habitables.
+* **SurfTerrain** et **SurfPieceResid** : corrélation forte (**0.74**) ; la surface du terrain est fortement liée à la surface des pièces résidentielles.
+* **SurfHabitable** et **SurfPieceResid** : corrélation très forte (**0.81**) ; logiquement, plus la surface habitable est grande, plus la surface dédiée aux pièces résidentielles l'est aussi.
+* **RatioHabitableTerrain** et **SurfTerrain** : corrélation négative forte (**-0.63**) ; plus le terrain est grand, plus le ratio surface habitable/terrain tend à diminuer.
+
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Organisation des pièces :**
+  * **SurfHabitable** et **NbPieces** : corrélation très forte (**0.95**) ; logiquement, plus un logement est grand, plus il comporte de pièces.
+  * **NbPieces** et **PiecesParM2** : corrélation négative forte (**-0.79**) ; les logements avec plus de pièces tendent à avoir moins de pièces par m², suggérant des pièces plus spacieuses.
+
+* **Utilisation de l'espace :**
+  * **SurfPieceResid** et **NbPieces** : corrélation positive modérée (**0.64**) ; plus il y a de pièces résidentielles, plus leur surface totale est importante.
+  * **SurfPieceResid** et **PiecesParM2** : corrélation négative très forte (**-0.89**) ; plus la surface des pièces résidentielles est importante, moins il y a de pièces par m² (pièces plus grandes).
+
+* **Corrélations les plus fortes :**
+  * **SurfHabitable** et **PiecesParM2** : **-0.87** ; les logements plus grands ont tendance à avoir des pièces plus spacieuses.
+* **RatioHabitableTerrain** et **PiecesParM2** : corrélation positive faible (**0.27**) ; un ratio plus élevé (maison occupant une plus grande proportion du terrain) est légèrement associé à plus de pièces par m².
+<br>
+
+
+## __**Corrélation avec les équipements**__
+
+```{r, echo=FALSE}
+
+
+dataDakar$EquipementScore <- scale(dataDakar$NbSDB + dataDakar$NbCuis + dataDakar$NbWC)
+
+
+
+variables <- c("Loyer","NbSDB", "NbWC", "NbCuis", "EquipementScore")
+
+cor_matrix <- cor(dataDakar[, variables])
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,          
+         addCoef.col = "black", 
+         number.cex = 0.7,      
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,         
+         title = "Matrice de corrélation - équipements",
+         mar = c(0,0,2,0))     
+```
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **NbSDB** : forte corrélation positive (**0.70**) ; un plus grand nombre de salles de bain est généralement associé à un loyer plus élevé.
+* **NbWC** : forte corrélation positive (**0.74**) ; les logements disposant de plus de WC tendent aussi à être plus chers.
+* **NbCuis** : faible corrélation positive (**0.21**) ; la présence de plusieurs cuisines a un impact limité sur le montant du loyer.
+* **EquipementScore** : forte corrélation positive (**0.76**) ; un bon niveau d'équipement constitue un critère clé pour expliquer un loyer plus important.
+
+<br>
+<p style="font-size: 24px;">Analyse des installations sanitaires</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Relations entre les installations sanitaires :</p>
+
+* **NbSDB** et **NbWC** : corrélation très forte (**0.80**) ; plus un logement dispose de salles de bain, plus il compte également de WC.
+* **NbSDB** et **NbCuis** : corrélation faible (**0.27**) ; on observe une légère tendance à retrouver davantage de cuisines dans les logements ayant plusieurs salles de bain.
+* **NbWC** et **NbCuis** : corrélation très faible (**0.13**) ; pratiquement aucune relation entre le nombre de WC et celui des cuisines.
+
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Équipements et confort :**
+  * **EquipementScore** et **NbSDB** : corrélation très forte (**0.95**) ; la quantité de salles de bain est un élément déterminant du score d’équipement.
+  * **EquipementScore** et **NbWC** : forte corrélation (**0.93**) ; le nombre de WC joue aussi un rôle important dans la qualité perçue du logement.
+  * **EquipementScore** et **NbCuis** : corrélation modérée (**0.34**) ; plusieurs cuisines apportent un léger supplément au niveau d'équipement global.
+
+* **Corrélations les plus marquantes :**
+  * **NbSDB** et **EquipementScore** : **0.95** ; les logements mieux équipés comportent nettement plus de salles de bain.
+  * **NbWC** et **EquipementScore** : **0.93** ; les WC sont également un critère important du confort global.
+  * **NbSDB** et **NbWC** : **0.80** ; les logements bien dotés en salles de bain le sont souvent aussi en WC.
+
+* **Impact sur la valeur locative :**
+  * Les équipements sanitaires (salles de bain et WC) influencent plus fortement le loyer que le nombre de cuisines.
+<br>
+
+## __**Corrélation avec les critères de confort**__
+
+```{r, echo=FALSE}
+dataDakar$ConfortScore <- rowSums(dataDakar[c("Jardin", "Cour", "Piscine", "Garage", "Egout", "HiTech")] == "Oui", na.rm = TRUE)
+
+confort_vars <- c("Loyer", "ConfortScore", "Standing", "Etat")
+confort_data <- dataDakar[, confort_vars]
+
+# Conversion robuste : tout ce qui n'est pas numérique devient factor puis numérique
+for (col in names(confort_data)) {
+  if (!is.numeric(confort_data[[col]])) {
+    confort_data[[col]] <- as.numeric(as.factor(confort_data[[col]]))
+  }
+}
+
+cor_matrix_confort <- cor(confort_data, use = "pairwise.complete.obs")
+
+corrplot(cor_matrix_confort,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         addCoef.col = "black", 
+         number.cex = 0.7,
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,
+         title = "Matrice de corrélation - Confort",
+         mar = c(0,0,2,0))
+```
+
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **ConfortScore** : corrélation positive modérée (**0.39**) ; un meilleur confort global contribue à augmenter le loyer, mais de manière modérée.
+* **Standing** : forte corrélation positive (**0.58**) ; le standing du logement joue un rôle important dans la détermination du loyer.
+* **État** : corrélation très faible (**0.06**) ; l'état général du bien semble avoir très peu d'effet sur le montant du loyer.
+
+<br>
+<p style="font-size: 24px;">Analyse des facteurs de confort</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Relations entre les indicateurs de confort :</p>
+
+* **ConfortScore** et **Standing** : corrélation modérée (**0.45**) ; un logement plus confortable est souvent associé à un standing supérieur, mais la relation reste moyenne.
+* **ConfortScore** et **État** : corrélation quasi inexistante (**0.02**) ; l'état du logement influence très peu la perception globale du confort.
+* **Standing** et **État** : corrélation très faible (**0.05**) ; le standing et l'état d'entretien sont presque indépendants l'un de l'autre.
+
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Importance du standing :**
+  * Le **standing** est l'élément le plus corrélé au loyer (**0.58**), ce qui montre que les locataires accordent beaucoup d'importance à la qualité perçue du logement (prestige, localisation, qualité des matériaux).
+  * Le standing est relativement indépendant des autres indicateurs, ce qui en fait une dimension spécifique à part entière.
+
+* **Rôle du confort global :**
+  * Le **ConfortScore** a une influence modérée sur le loyer (**0.39**), ce qui suggère qu'un bon niveau de confort est apprécié, mais reste secondaire par rapport au standing.
+  * Sa corrélation modérée avec le standing (**0.45**) montre qu'ils sont liés, mais pas confondus : un logement peut être confortable sans pour autant être haut de gamme.
+
+* **Un impact limité de l'état du logement :**
+  * L'**état** (entretien, finitions) n'a pratiquement pas d'effet ni sur le loyer, ni sur les autres dimensions de qualité du logement.
+  * Cela indique que les locataires privilégient d'abord le prestige et le confort perçu plutôt que l'état réel du bien.
+
+* **Implications pour la valorisation :**
+  * Ces résultats montrent que pour optimiser un loyer, il est plus stratégique d'améliorer le standing et le confort perçu que de miser uniquement sur l’entretien.
+<br>
+
+## __**Corrélation avec la localisation**__
+
+```{r, echo=FALSE}
+localisation_vars <- c("Loyer", "DistCtrVille", "BordMer", "Commerc", "Quartier")
+localisation_data <- dataDakar[, localisation_vars]
+
+# Conversion robuste : tout ce qui n'est pas numérique devient factor puis numérique
+for (col in names(localisation_data)) {
+  if (!is.numeric(localisation_data[[col]])) {
+    localisation_data[[col]] <- as.numeric(as.factor(localisation_data[[col]]))
+  }
+}
+
+cor_matrix_localisation <- cor(localisation_data, use = "pairwise.complete.obs")
+
+corrplot(cor_matrix_localisation,
+         method = "color",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         addCoef.col = "black", 
+         number.cex = 0.7,
+         col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
+         diag = FALSE,
+         title = "Matrice de corrélation - Localisation",
+         mar = c(0,0,2,0))
+```
+
+<br>
+<p style="font-size: 24px;">Impact sur le loyer</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Facteurs clés influençant le loyer</p>
+
+* **DistCtrVille** : corrélation négative faible (**-0.10**) ; plus un logement est éloigné du centre-ville, plus le loyer a tendance à être légèrement plus bas.
+* **BordMer** : corrélation négative modérée (**-0.37**) ; étonnamment, être proche du bord de mer est associé à des loyers un peu plus faibles.
+* **Commerc** : corrélation positive très faible (**0.11**) ; la proximité des commerces a un petit effet positif sur le loyer.
+* **Quartier** : corrélation quasiment nulle (**-0.01**) ; le type de quartier semble n’avoir presque aucun impact sur le loyer.
+
+<br>
+<p style="font-size: 24px;">Analyse des facteurs de localisation</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Relations entre les indicateurs de localisation :</p>
+
+* **DistCtrVille** et **BordMer** : corrélation négative modérée (**-0.42**) ; les logements près du centre-ville sont en général aussi plus proches de la mer.
+* **DistCtrVille** et **Commerc** : corrélation positive modérée (**0.49**) ; plus on s'éloigne du centre, plus on trouve de commerces à proximité, sans doute dans des zones commerciales en périphérie.
+* **DistCtrVille** et **Quartier** : corrélation très faible (**0.07**) ; il y a très peu de lien entre l’éloignement du centre et le type de quartier.
+* **BordMer** et **Commerc** : corrélation négative modérée (**-0.33**) ; les logements près de la mer sont souvent situés dans des zones avec moins de commerces.
+
+<br>
+<p style="font-size: 24px;">Interprétation générale</p>
+<br>
+<p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
+
+* **Impact des critères de localisation sur le loyer :**
+  * Contrairement à ce qu'on pourrait penser, être proche de la mer est associé à des loyers plus bas (**-0.37**). Cela pourrait s’expliquer par des facteurs locaux spécifiques (zones inondables, lieu touristique, etc.).
+  * S'éloigner du centre-ville entraîne une baisse modérée du loyer (**-0.10**), mais l'effet reste relativement faible.
+  * La présence de commerces joue un rôle très mineur dans la variation des loyers (**0.11**).
+
+* **Relations entre les critères de localisation :**
+  * Les logements près du centre-ville sont aussi souvent plus proches de la mer.
+  * Les zones plus éloignées du centre semblent mieux équipées en commerces, probablement grâce à la présence de grands pôles commerciaux en périphérie.
+
+* **Le quartier, un facteur peu déterminant :**
+  * Le **quartier** ne semble pas vraiment faire varier le loyer ; son influence est quasi inexistante dans cette étude.
+
+* **En résumé :**
+  * Dans cette zone, la proximité de la mer n'est pas un atout pour faire augmenter les loyers.
+  * Les commerces sont plus nombreux en périphérie qu'au cœur de la ville.
+  * Le standing ou la situation précise du logement semblent donc bien plus importants que le simple fait d’être en centre-ville ou au bord de mer.
+<br>
+
+## __**Conclusion**__
+
+<p style="text-indent: 20px;"> À travers cette analyse des corrélations, nous avons mieux compris les facteurs qui influencent la valeur locative d’un logement. Les résultats montrent clairement que la surface habitable, le nombre de pièces et le niveau d’équipement sont les éléments les plus déterminants pour fixer un loyer. Le standing du logement joue également un rôle clé, bien plus que l’état général du bien.</p>
+
+<p>En revanche, des critères comme la proximité du centre-ville ou de la mer ont un impact relativement faible dans notre étude.</p>
+
+<p>Cela suggère que pour valoriser un bien immobilier et optimiser son loyer, il est plus pertinent d’investir dans l’amélioration du confort et de la qualité perçue, plutôt que de se concentrer uniquement sur l’emplacement ou l’entretien.</p>
+<br>
+
+# __**Analyse par quartier**__
+
+<p style="text-indent: 20px;"> Analyser les données immobilières par quartier nous permet de mieux comprendre les spécificités de chaque zone de la ville. En effet, chaque quartier présente des caractéristiques uniques en termes de prix, de superficie, de densité et de type de logements, ce qui influence directement le marché immobilier local. Cette analyse approfondie nous fournira des informations plus détaillées sur la répartition et les tendances du parc immobilier à Dakar.</p>
+
+## __**Analyse des loyers moyens par quartier**__
+
+<p style="text-indent: 20px;"> Notre analyse va se concentrer maintenant sur les loyers moyens à travers les différents quartiers de la ville.  Cela nous permet donc d'identifier les zones les plus chers et les plus accessibles.</p>
+
+<p> En analysant le graphique, on remarque tout de suite que <strong>FanmRésidence</strong> se démarque avec des loyers à plus de <strong>2000 K FCFA</strong> en moyenne. Par conséquent, ce quartier est le plus <strong>cher</strong> de la ville. Ensuite, on observe un groupe de quartiers comme <strong>Almadies</strong>, <strong>Mamelles</strong> et <strong>FannHock</strong>, qui se situent autour de <strong>1000 K FCFA</strong>, donc déjà bien plus accessibles pour la population locale, mais restant dans la fourchette haute.</p> 
+<p> La plupart des quartiers se trouvent avec des loyers entre <strong>100 K</strong> et <strong>450 K FCFA</strong>. Et puis, tout en bas de l’échelle, on trouve des endroits comme <strong>Malika</strong>, <strong>Libertel</strong> et <strong>Derkle</strong>, où les loyers sont les plus bas, avoisinant les <strong>50 K FCFA</strong>.</p>
+<p> Cette répartition permet de mettre en évidence les importantes <strong>disparités économiques</strong> entre les différents secteurs de la ville.</p>
+<br>
+
+```{r, echo=FALSE}
+
+loyer_moyen_par_quartier <- dataDakar |>
+  group_by(Quartier) |>
+  summarise(LoyerMoyen = mean(Loyer))
+
+LoyerMoyensQuartier <- ggplot(data = loyer_moyen_par_quartier,
+                                    aes(x = fct_infreq(Quartier, LoyerMoyen),
+                                        y=LoyerMoyen)) +
+                                    geom_col(fill = "#4682B4", color = "black", width = 0.8) +
+                                    labs(title = "Analyse par quartier : Loyen moyen",
+                                         x="Quartier",
+                                         y="Loyer moyen (Millier de FCFA)"
+                                         ) +
+                                    theme_minimal(base_size = 14) +
+                                    theme(
+                                      plot.title = element_text(hjust = 0.5, face = "bold", size=15),
+                                      axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+                                      axis.text.y = element_text(size=10),
+                                      axis.title = element_text(face = "bold", size=14)
+                                      )
+ggplotly(LoyerMoyensQuartier)
+
+```
+<br>
+
+
+## __**Analyse de la surface moyenne par quartier**__
+
+<p style="text-indent: 20px;">
+Poursuivons notre analyse en examinant la <strong>surface habitable moyenne</strong> dans les différents quartiers de la ville.
+</p>
+
+
+<p> L’analyse du graphique révèle que <strong>FanmRésidence</strong> domine également en termes de superficie, avec une surface habitable moyenne avoisinant les <strong>400 m²</strong>. Les quartiers <strong>Almadies</strong> et <strong>Mamelles</strong> suivent de près, avec des surfaces supérieures à <strong>300 m²</strong>. On observe ensuite une diminution de la superficie, avec plusieurs quartiers comme <strong>PointE</strong>, <strong>Ngor</strong> et <strong>Parcelles</strong> offrant des surfaces moyennes comprises entre <strong>250</strong> et <strong>300 m²</strong>.</p> 
+<p> La majorité des quartiers se situe entre <strong>80</strong> et <strong>200 m²</strong>, tandis que des quartiers comme <strong>Libertel</strong> et <strong>Derkle</strong> présentent les surfaces les plus modestes, inférieures à <strong>50 m²</strong>. Cela permet de mettre en avant les différences entre les quartiers plus chers et les plus accessibles.</p>
+<br>
+
+```{r, echo=FALSE}
+
+loyer_moyen_par_quartier <- dataDakar |>
+  group_by(Quartier) |>
+  summarise(SurfaceMoyenne = mean(SurfHabitable))
+
+SurfaceMoyenneQuartier <- ggplot(data = loyer_moyen_par_quartier,
+                                    aes(x = fct_infreq(Quartier, SurfaceMoyenne),
+                                        y=SurfaceMoyenne)) +
+                                    geom_col(fill = "#4682B4", color = "black", width = 0.8) +
+                                    labs(title = "Analyse par quartier : Surface habitable moyenne",
+                                         x="Quartier",
+                                         y="Surface habitable moyenne"
+                                         ) +
+                                    theme_minimal(base_size = 14) +
+                                    theme(
+                                      plot.title = element_text(hjust = 0.5, face = "bold", size=15),
+                                      axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+                                      axis.text.y = element_text(size=10),
+                                      axis.title = element_text(face = "bold", size=14)
+                                      )
+ggplotly(SurfaceMoyenneQuartier)
+
+```
+<br>
+
+## __**Analyse du nombre de quartier par Logement**__
+
+<p style="text-indent: 20px;"> Pour finir, on s’intéresse maintenant à la <strong>répartition du nombre de logements</strong> selon les quartiers. C’est un bon moyen d’avoir une idée de la <strong>densité résidentielle</strong> et de voir comment le <strong>marché immobilier</strong> est réparti à travers la ville.</p> 
+
+<p> Le graphique met en évidence une distribution assez marquée, avec trois niveaux bien distincts. Les quartiers <strong>Fass</strong> et <strong>Plateau</strong> arrivent en tête, avec environ <strong>3 logements en moyenne</strong>, ce qui laisse penser à une plus forte concentration de logements. Juste derrière, on retrouve un groupe de quartiers comme <strong>Mamelles</strong>, <strong>Medina</strong>, <strong>Mermoz</strong>, <strong>PointE</strong> et <strong>Yoff</strong> avec une moyenne de <strong>2 logements</strong>. Pour le reste des quartiers, la moyenne tourne autour de <strong>1 logement</strong>.</p> 
+
+<p> Cette répartition montre que la densité varie pas mal d’un quartier à l’autre. Certains semblent plus orientés vers des zones résidentielles denses, tandis que d’autres proposent un cadre plus dispersé, avec des logements plus espacés les uns des autres.</p> <p>Cela nous permet donc d'avoir un peu plus d'information sur comment est structuré le parc immobilier à Dakar.</p>
+<br>
+```{r, echo=FALSE}
+
+NombreLogementsQuartiers <- ggplot(data = dataDakar,
+                                    aes(x = fct_infreq(Quartier))) +
+                                    geom_bar(fill = "#4682B4", color = "black", width = 0.8) +
+                                    labs(title = "Analyse par quartier : Nombre de logements",
+                                         x="Quartier",
+                                         y="Nombre de logements"
+                                         ) +
+                                    theme_minimal(base_size = 14) +
+                                    theme(
+                                      plot.title = element_text(hjust = 0.5, face = "bold", size=15),
+                                      axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+                                      axis.text.y = element_text(size=10),
+                                      axis.title = element_text(face = "bold", size=14)
+                                      )
+ggplotly(NombreLogementsQuartiers)
+      
+
+```
+
+
+<p style="text-indent: 20px;"> En conclusion, l’analyse des loyers, des surfaces habitables et du nombre de logements par quartier révèle des disparités notables au sein de la ville. Certains quartiers, comme <strong>FanmRésidence</strong>, se distinguent par des loyers élevés et des surfaces habitables importante, tandis que d’autres, comme <strong>Malika</strong> ou <strong>Derkle</strong>, offrent des logements plus modestes à des prix plus accessibles.</p>
+<p> Grâce à cette analyse, nous avons pu mieux comprendre comment la ville est organisée. Nous avons ainsi identifié les quartiers les plus chers, souvent caractérisés par de grandes surfaces, et ceux plus accessibles, avec des surfaces plus petites. Étudier la ville quartier par quartier nous permet d'avoir une vision plus précise de son marché immobilier et des différences entre les différents secteurs.</p>
+<br>
+
+# __**Conclusion**__
+
+<p style="text-indent: 20px;">
+Au terme de cette étude sur le marché locatif à Dakar, menée à partir d'un échantillon de 41 biens, nous avons identifié les principaux facteurs qui influencent les loyers.
+</p>
+
+<p>
+La plupart des loyers se situent entre 60 000 et 500 000 FCFA, ce qui montre un vrai décalage avec les revenus moyens et souligne la difficulté pour beaucoup de se loger correctement.
+</p>
+
+<p>
+Nous avons constaté que la surface du terrain, la surface habitable et le nombre de pièces comptent bien plus que l’état général du bien ou la proximité du centre-ville pour faire augmenter les loyers.
+</p>
+
+<p>
+L’analyse par quartier montre aussi de fortes différences de prix, en lien direct avec les inégalités sociales présentes dans la ville.
+</p>
+
+<p>
+Même si notre étude reste limitée, elle permet de mieux comprendre comment le marché immobilier à Dakar fonctionne et confirme qu’investir dans le confort des logements est souvent plus rentable que de miser uniquement sur la localisation.
+</p>
+<br>
+
+# __**Contributeurs**__
+<p>Réalisé par <strong>Paillard Evan, Vilardell Joris et Mathieu Damien</strong></p>
