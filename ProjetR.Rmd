@@ -450,7 +450,7 @@ ggplotly(RelationLoyerNbPiece)
 
 ## __**Relation entre le loyer et le type**__
 
-<p style="text-indent: 20px;"> Ce graphique décris la relation entre le loyer et le type (Appartement ou Villa). On remarque que, en moyenne, les villas sont bien plus chères que les appartements. Ce qui ressort surtout, c’est la grande variation des loyers pour les villas : certains peuvent atteindre des sommes très élevées, tandis que ceux des appartements restent dans une fourchette plus modeste et concentrée. Cette différence s'explique probablement par des facteurs comme la taille, le confort ou encore les prestations souvent associées aux villas. En résumé, le type de logement a donc un impact direct sur le montant du loyer.</p>
+<p style="text-indent: 20px;"> Ce graphique décrit la relation entre le loyer et le type de logement (Appartement ou Villa). On observe que, en moyenne, les villas sont nettement plus chères que les appartements. Ce qui ressort surtout, c'est l'importante variation des loyers pour les villas : certains atteignent des montants très élevés, tandis que ceux des appartements restent dans une fourchette plus modérée et concentrée. Cette différence peut s’expliquer par des facteurs tels que la superficie, le niveau de confort ou encore les prestations généralement associées aux villas. Le type de logement joue donc un rôle déterminant dans la fixation du loyer.</p> <p style="text-indent: 20px;"> D'après les données, la médiane des loyers pour les appartements s'établit autour de 65.000 FCFA dans le premier graphique, tandis que celle des villas avoisine les 350.000 FCFA, allant même jusqu'à 842.500 FCFA selon les cas. L'écart est donc significatif, les loyers des villas pouvant atteindre jusqu'à cinq fois celui des appartements. Les valeurs maximales illustrent encore plus clairement cette disparité : les villas peuvent grimper jusqu'à 2.100.000 FCFA, contre un plafond d'environ 600.000 FCFA pour les appartements les plus haut de gamme. Cette répartition montre clairement que les appartements et les villas ne s'adressent pas aux mêmes profils de locataires, ce qui reflète de grandes différences de pouvoir d'achat.</p>
 
 
 ```{r, echo=FALSE}
@@ -478,8 +478,9 @@ ggplotly(LoyerType)
 ## __**Relation entre le loyer et le standing**__
 
 
-<p style="text-indent: 20px;"> Ce graphique porte sur le standing du logement, c’est-à-dire son niveau de confort et de qualité. Là aussi, l'écart est très net. Les logements dits « de standing » affichent des loyers bien plus élevés que ceux qui ne bénéficient pas de ce statut. La médiane est plus haute, les valeurs extrêmes sont beaucoup plus élevées, et l'ensemble de la distribution est clairement décalé vers le haut. Cela confirme que le standing joue un rôle clé dans la fixation du loyer, ce qui paraît tout à fait logique : un logement mieux équipé, plus moderne ou mieux entretenu justifie un prix plus élevé.
-<br>
+<p style="text-indent: 20px;"> Ce graphique porte sur le standing du logement, c'est-à-dire son niveau de confort et de qualité. Là aussi, l'écart est très net. Les logements dits « de standing » affichent des loyers bien plus élevés que ceux qui ne bénéficient pas de ce statut. La médiane est plus haute, les valeurs extrêmes sont beaucoup plus élevées, et l'ensemble de la distribution est clairement décalé vers le haut. Cela confirme que le standing joue un rôle clé dans la fixation du loyer, ce qui paraît tout à fait logique : un logement mieux équipé, plus moderne ou mieux entretenu justifie un prix plus élevé.
+</p>
+<p> Les chiffres sont particulièrement révélateurs : dans le premier graphique, la médiane des loyers pour les logements sans standing est de 90.000 FCFA, alors qu'elle grimpe à environ 520.000 FCFA pour les logements avec standing dans le second graphique. La différence est donc considérable, avec des loyers pouvant être multipliés par plus de 5 selon le niveau de standing. Les valeurs maximales accentuent davantage cette disparité : les logements avec standing peuvent atteindre 2.100.000 FCFA, tandis que ceux sans standing plafonnent à 600.000 FCFA. L'écart entre les valeurs minimales est également significatif : 20.000 FCFA pour les logements sans standing contre 50.000 FCFA minimum pour ceux avec standing. Cette distribution démontre clairement que le standing constitue un facteur déterminant dans l'établissement des prix sur le marché immobilier, créant ainsi une segmentation évidente entre les offres destinées à différentes catégories de locataires.</p><br>
 
 ```{r, echo=FALSE}
 LoyerStanding <- ggplot(data = dataDakar, aes(x = Standing, y = Loyer, fill = factor(Standing))) + 
@@ -574,7 +575,7 @@ corrplot(cor_matrix,
   * **NbCuis (Nombre de cuisines)** : corrélation plus faible (**entre 0.27 et 0.13**) ; la variation du nombre de cuisines influence peu le reste des caractéristiques.
 
 * **Confort et qualité :**
-  * **EquipementScore** : fortement corrélé à **SurfHabitable** (**0.79**) et à **NbPieces** (**0.77**) ; donc, plus un logement est spacieux et dispose de nombreuses pièces, plus il est bien équipé.
+  * **EquipementScore** : fortement corrélé à **SurfHabitable** (**0.92**) et à **NbPieces** (**0.96**) ; donc, plus un logement est spacieux et dispose de nombreuses pièces, plus il est bien équipé.
 
 * **Corrélation la plus forte :** **0.99** entre **SurfHabitable** et **NbPieces** ; un logement plus grand implique presque systématiquement plus de pièces.
 
