@@ -17,7 +17,6 @@ dashboardPage(
     
     dashboardBody(
         tabItems(
-            # Vue d'ensemble
             tabItem(tabName = "overview",
                 fluidRow(
                     box(plotlyOutput("overviewPlot"), width = 8),
@@ -31,7 +30,6 @@ dashboardPage(
                 )
             ),
             
-            # Analyse du Loyer
             tabItem(tabName = "rent",
                 fluidRow(
                     box(plotlyOutput("rentAnalysis"), width = 8),
@@ -43,7 +41,6 @@ dashboardPage(
                 )
             ),
             
-            # Corrélations
             tabItem(tabName = "correlations",
                 fluidRow(
                     box(width = 12,
@@ -79,7 +76,6 @@ dashboardPage(
                 )
             ),
             
-            # Analyse par Quartier
             tabItem(tabName = "neighborhood",
                 fluidRow(
                     box(plotlyOutput("neighborhoodPlot"), width = 12),
@@ -92,7 +88,6 @@ dashboardPage(
                 )
             ),
             
-            # Données
             tabItem(tabName = "data",
                 fluidRow(
                     box(DTOutput("dataTable"), width = 12)

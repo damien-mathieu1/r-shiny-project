@@ -5,7 +5,6 @@ library(corrplot)
 
 function(input, output, session) {
     
-    # Vue d'ensemble
     output$overviewPlot <- renderPlotly({
       if (input$overviewVar == "Loyer") {
         if (input$plotType == "hist") {
@@ -124,7 +123,7 @@ function(input, output, session) {
             scale_y_continuous(breaks = scales::pretty_breaks(n = 10), limits = c(0, 500))
         }
       } else {
-        # fallback générique
+
         if (input$plotType == "hist") {
           p <- ggplot(data, aes_string(x = input$overviewVar)) +
             geom_histogram(fill = "#4682B4", color = "black", bins = 30) +
@@ -156,10 +155,8 @@ function(input, output, session) {
       ggplotly(p)
     })
     
-    # Analyse du Loyer
     output$rentAnalysis <- renderPlotly({
         if (input$rentVar == "SurfHabitable") {
-            # Scatterplot : Loyer ~ SurfHabitable (identique ProjetR.Rmd)
             p <- ggplot(data, aes(x = SurfHabitable, y = Loyer)) +
                 geom_point(color = "#4682B4") +
                 geom_smooth(method = "lm", color = "#4682B4") +
@@ -177,7 +174,6 @@ function(input, output, session) {
                                    limits = c(0, 450)) +
                 scale_y_continuous(breaks = seq(0, max(data$Loyer, na.rm = TRUE), by = 250))
         } else if (input$rentVar == "NbPieces") {
-            # Scatterplot : Loyer ~ NbPieces (axe y : breaks automatiques mais moins serrés)
             p <- ggplot(data, aes(x = NbPieces, y = Loyer)) +
                 geom_point(color = "#4682B4") +
                 geom_smooth(method = "lm", color = "#4682B4") +
@@ -195,7 +191,6 @@ function(input, output, session) {
                                    limits = c(0, max(data$NbPieces, na.rm = TRUE))) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 8))
         } else if (input$rentVar == "Type") {
-            # Boxplot : Loyer ~ Type
             p <- ggplot(data, aes(x = Type, y = Loyer, fill = Type)) +
                 geom_boxplot(color = "black") +
                 labs(title = "Loyer selon le type de logement",
@@ -212,7 +207,6 @@ function(input, output, session) {
                 scale_fill_manual(values = c("#4682B4", "#B44682")) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
         } else if (input$rentVar == "Standing") {
-            # Boxplot : Loyer ~ Standing
             p <- ggplot(data, aes(x = Standing, y = Loyer, fill = Standing)) +
                 geom_boxplot(color = "black") +
                 labs(title = "Loyer selon le standing",
@@ -229,7 +223,6 @@ function(input, output, session) {
                 scale_fill_manual(values = c("#4682B4", "#B44682")) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
         } else {
-            # fallback générique
             if (input$rentVar %in% numeric_vars) {
                 p <- ggplot(data, aes_string(x = input$rentVar, y = "Loyer")) +
                     geom_point(color = "#4682B4") +
@@ -261,7 +254,6 @@ function(input, output, session) {
                         axis.title = element_text(face = "bold", size = 14)
                     ) +
                     scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
-                # Pas de scale_fill_manual ici pour éviter l'erreur si levels inconnus
             }
         }
         if (input$logScale) {
@@ -270,7 +262,6 @@ function(input, output, session) {
         ggplotly(p)
     })
     
-    # Corrélations
     selected_vars <- reactive({
       if (input$varGroup == "all") {
         return(numeric_vars)
@@ -283,29 +274,22 @@ function(input, output, session) {
       }
     })
     
-    # Fonction pour calculer la matrice de corrélation
     cor_matrix <- reactive({
-      # Sélectionner les variables en fonction du groupe choisi
       if (input$varGroup == "all") {
-        # Créer une copie temporaire des données pour les calculs spécifiques
         temp_data <- data
-        # Recalculer les variables dérivées exactement comme dans l'exemple
         temp_data$RatioHabitableTerrain <- temp_data$SurfHabitable / temp_data$SurfTerrain
         temp_data$PiecesParM2 <- temp_data$NbPieces / temp_data$SurfHabitable
         temp_data$EquipementScore <- scale(temp_data$NbSDB + temp_data$NbCuis + temp_data$NbWC)
         temp_data$ConfortScore <- scale(temp_data$SurfHabitable / temp_data$NbPieces)
         
-        # Utiliser exactement les variables demandées
         variables <- c("Loyer", "SurfTerrain", "SurfHabitable", "SurfPiecResid", 
                       "NbPieces", "NbPiecesResid", "NbSDB", "NbChamBur", 
                       "NbSalonsSAM", "NbWC", "NbCuis", "RatioHabitableTerrain", 
                       "PiecesParM2", "EquipementScore", "ConfortScore")
         
-        # Calculer la matrice de corrélation exactement comme dans l'exemple
         cor_mat <- cor(temp_data[, variables])
         return(cor_mat)
       } else if (input$varGroup == "surface") {
-        # Variables liées à la surface
         vars <- c("Loyer", "SurfTerrain", "SurfHabitable", "SurfPiecResid", "NbPieces", 
                  "RatioHabitableTerrain", "PiecesParM2")
         selected_data <- data[, vars, drop = FALSE]
@@ -318,10 +302,7 @@ function(input, output, session) {
         return(cor_mat)
         
       } else if (input$varGroup == "equipements") {
-        # Variables liées aux équipements - Utiliser exactement les mêmes variables que dans le code R fourni
-        # Créer une copie temporaire des données pour recalculer EquipementScore
         temp_data <- data
-        # Recalculer EquipementScore exactement comme dans le code R fourni
         temp_data$EquipementScore <- scale(temp_data$NbSDB + temp_data$NbCuis + temp_data$NbWC)
         
         vars <- c("Loyer", "NbSDB", "NbWC", "NbCuis", "EquipementScore")
@@ -335,7 +316,6 @@ function(input, output, session) {
         return(cor_mat)
         
       } else if (input$varGroup == "confort") {
-        # Variables liées au confort
         vars <- c("Loyer", "ConfortScore", "Standing", "Etat")
         selected_data <- data[, vars, drop = FALSE]
         for (col in names(selected_data)) {
@@ -347,7 +327,6 @@ function(input, output, session) {
         return(cor_mat)
         
       } else if (input$varGroup == "localisation") {
-        # Variables liées à la localisation
         vars <- c("Loyer", "DistCtrVille", "BordMer", "Commerc", "Quartier")
         selected_data <- data[, vars, drop = FALSE]
         for (col in names(selected_data)) {
@@ -359,32 +338,25 @@ function(input, output, session) {
         return(cor_mat)
         
       } else {
-        # Par défaut, utiliser toutes les variables
         vars <- c("Loyer", "SurfTerrain", "SurfHabitable", "NbPieces")
       }
       
-      # Pour tous les groupes de variables autres que "all"
       if (input$varGroup != "all") {
-        # Extraire les données pour les variables sélectionnées
         selected_data <- data[, vars, drop = FALSE]
         
-        # Convertir les variables non numériques en facteurs puis en numériques
         for (col in names(selected_data)) {
           if (!is.numeric(selected_data[[col]])) {
             selected_data[[col]] <- as.numeric(as.factor(selected_data[[col]]))
           }
         }
         
-        # Calculer la matrice de corrélation
         cor_mat <- cor(selected_data, use = "pairwise.complete.obs")
         return(cor_mat)
       }
     })
     
-    # Mise à jour des choix pour la sélection des paires de variables
     observe({
       vars <- selected_vars()
-      # Filtrer les variables qui existent réellement dans les données
       vars <- vars[vars %in% names(data)]
       
       if (length(vars) > 1) {
@@ -429,7 +401,6 @@ function(input, output, session) {
         var1 <- vars[1]
         var2 <- vars[2]
         
-        # Vérifier que les variables existent dans la matrice de corrélation
         cor_mat <- cor_matrix()
         if (!all(c(var1, var2) %in% rownames(cor_mat))) return(NULL)
         
@@ -443,7 +414,6 @@ function(input, output, session) {
           TRUE ~ "très faible"
         )
         
-        # Analyse détaillée en fonction du type de variables
         detail <- ""
         if (var1 %in% c("RatioHabitableTerrain", "PiecesParM2")) {
           detail <- sprintf("<br>Cette variable dérivée permet d'analyser l'efficacité de l'utilisation de l'espace.")
@@ -451,7 +421,6 @@ function(input, output, session) {
           detail <- sprintf("<br>Ce score composite reflète le niveau global d'équipement/confort du logement.")
         }
         
-        # Ajouter une interprétation spécifique en fonction des variables
         specific_detail <- ""
         if ("Loyer" %in% c(var1, var2)) {
           impact <- if(cor_val > 0) "positive" else "négative"
@@ -496,7 +465,6 @@ function(input, output, session) {
         cor_mat <- cor_matrix()
         
         if (input$varGroup == "all") {
-          # Impact sur le loyer - Toutes les variables
           surf_terrain_loyer <- round(cor_mat["SurfTerrain", "Loyer"], 2)
           surf_habitable_loyer <- round(cor_mat["SurfHabitable", "Loyer"], 2)
           nb_sdb_loyer <- round(cor_mat["NbSDB", "Loyer"], 2)
@@ -515,7 +483,6 @@ function(input, output, session) {
           ', surf_terrain_loyer, surf_habitable_loyer, nb_sdb_loyer, nb_chambur_loyer, nb_salons_loyer))
           
         } else if (input$varGroup == "surface") {
-          # Impact sur le loyer - Surface
           surf_terrain_loyer <- round(cor_mat["SurfTerrain", "Loyer"], 2)
           surf_habitable_loyer <- round(cor_mat["SurfHabitable", "Loyer"], 2)
           surf_piece_resid_loyer <- round(cor_mat["SurfPiecResid", "Loyer"], 2)
@@ -536,7 +503,6 @@ function(input, output, session) {
           ', surf_terrain_loyer, surf_habitable_loyer, surf_piece_resid_loyer, nb_pieces_loyer, ratio_habitable_terrain_loyer, pieces_par_m2_loyer))
           
         } else if (input$varGroup == "equipements") {
-          # Impact sur le loyer - Équipements
           nb_sdb_loyer <- round(cor_mat["NbSDB", "Loyer"], 2)
           nb_wc_loyer <- round(cor_mat["NbWC", "Loyer"], 2)
           nb_cuis_loyer <- round(cor_mat["NbCuis", "Loyer"], 2)
@@ -553,7 +519,6 @@ function(input, output, session) {
           ', nb_sdb_loyer, nb_wc_loyer, nb_cuis_loyer, equip_score_loyer))
           
         } else if (input$varGroup == "confort") {
-          # Impact sur le loyer - Confort
           confort_score_loyer <- round(cor_mat["ConfortScore", "Loyer"], 2)
           standing_loyer <- round(cor_mat["Standing", "Loyer"], 2)
           etat_loyer <- round(cor_mat["Etat", "Loyer"], 2)
@@ -568,7 +533,6 @@ function(input, output, session) {
           ', confort_score_loyer, standing_loyer, etat_loyer))
           
         } else if (input$varGroup == "localisation") {
-          # Impact sur le loyer - Localisation
           dist_ctr_ville_loyer <- round(cor_mat["DistCtrVille", "Loyer"], 2)
           bord_mer_loyer <- round(cor_mat["BordMer", "Loyer"], 2)
           commerc_loyer <- round(cor_mat["Commerc", "Loyer"], 2)
@@ -592,23 +556,19 @@ function(input, output, session) {
       })
     })
     
-    # Titre dynamique pour l'interprétation générale
     output$generalInterpretationTitle <- renderUI({
       HTML('<p style="font-size: 24px;">Interprétation générale</p>')
     })
     
-    # Titre dynamique pour l'impact sur le loyer
     output$loyerAnalysisTitle <- renderUI({
       HTML('<p style="font-size: 24px;">Impact sur le loyer</p>')
     })
     
-    # Mise à jour de l'interprétation générale
     output$generalInterpretation <- renderUI({
       tryCatch({
         cor_mat <- cor_matrix()
         
         if (input$varGroup == "all") {
-          # Interprétation générale - Toutes les variables
           surf_pieces <- round(cor_mat["SurfHabitable", "NbPieces"], 2)
           surf_terrain <- round(cor_mat["SurfHabitable", "SurfTerrain"], 2)
           ratio_terrain <- round(cor_mat["RatioHabitableTerrain", "SurfTerrain"], 2)
@@ -617,7 +577,7 @@ function(input, output, session) {
           nbcuis_max <- round(cor_mat["NbCuis", "NbWC"], 2)
           equip_score_surfhab <- round(cor_mat["EquipementScore", "SurfHabitable"], 2)
           equip_score_nbpieces <- round(cor_mat["EquipementScore", "NbPieces"], 2)
-          confort_score_corr <- 0.90 # Valeur approximative pour "corrélation très forte avec plusieurs variables clés"
+          confort_score_corr <- 0.90 
           
           HTML(sprintf('
             <p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
@@ -645,7 +605,6 @@ function(input, output, session) {
           ', surf_pieces, surf_terrain, ratio_terrain, sdb_wc, nbcuis_min, nbcuis_max, equip_score_surfhab, equip_score_nbpieces, confort_score_corr))
           
         } else if (input$varGroup == "surface") {
-          # Interprétation générale - Surface
           surf_pieces <- round(cor_mat["SurfHabitable", "NbPieces"], 2)
           pieces_piecesm2 <- round(cor_mat["NbPieces", "PiecesParM2"], 2)
           surfpieceresid_nbpieces <- round(cor_mat["SurfPiecResid", "NbPieces"], 2)
@@ -678,13 +637,12 @@ function(input, output, session) {
           ', surf_pieces, pieces_piecesm2, surfpieceresid_nbpieces, surfpieceresid_piecesm2, surfhab_piecesm2, ratio_pieces))
           
         } else if (input$varGroup == "equipements") {
-          # Interprétation générale - Équipements
           equip_sdb <- round(cor_mat["EquipementScore", "NbSDB"], 2)
           equip_wc <- round(cor_mat["EquipementScore", "NbWC"], 2)
           equip_cuis <- round(cor_mat["EquipementScore", "NbCuis"], 2)
           sdb_wc <- round(cor_mat["NbSDB", "NbWC"], 2)
-          sdb_equip <- equip_sdb  # Même valeur que equip_sdb mais dans l'autre sens
-          wc_equip <- equip_wc    # Même valeur que equip_wc mais dans l'autre sens
+          sdb_equip <- equip_sdb  
+          wc_equip <- equip_wc    
           
           HTML(sprintf('
             <p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
@@ -712,7 +670,6 @@ function(input, output, session) {
           ', equip_sdb, equip_wc, equip_cuis, sdb_equip, wc_equip, sdb_wc))
           
         } else if (input$varGroup == "confort") {
-          # Interprétation générale - Confort
           standing_loyer <- round(cor_mat["Standing", "Loyer"], 2)
           confort_loyer <- round(cor_mat["ConfortScore", "Loyer"], 2)
           standing_confort <- round(cor_mat["Standing", "ConfortScore"], 2)
@@ -747,7 +704,6 @@ function(input, output, session) {
           ', standing_loyer, confort_loyer, standing_confort))
           
         } else if (input$varGroup == "localisation") {
-          # Interprétation générale - Localisation
           bord_mer_loyer <- round(cor_mat["BordMer", "Loyer"], 2)
           dist_loyer <- round(cor_mat["DistCtrVille", "Loyer"], 2)
           commerc_loyer <- round(cor_mat["Commerc", "Loyer"], 2)
@@ -791,7 +747,6 @@ function(input, output, session) {
       })
     })
     
-    # Titre dynamique pour l'analyse des facteurs de qualité
     output$qualityAnalysisTitle <- renderUI({
       if (input$varGroup == "all") {
         HTML('<p style="font-size: 24px;">Analyse des facteurs de qualité</p>')
@@ -808,15 +763,13 @@ function(input, output, session) {
       }
     })
     
-    # Mise à jour de l'analyse des facteurs de qualité
     output$qualityAnalysis <- renderUI({
       tryCatch({
         cor_mat <- cor_matrix()
         
         if (input$varGroup == "all") {
-          # Analyse des facteurs de qualité pour toutes les variables
           equip_loyer <- round(cor_mat["EquipementScore", "Loyer"], 2)
-          confort_score_corr <- 0.90 # Valeur approximative pour "corrélation très forte avec plusieurs variables clés"
+          confort_score_corr <- 0.90
           
           HTML(sprintf('
             <p style="font-size: 18px; font-weight: bold;">Analyse des facteurs de qualité :</p>
@@ -828,7 +781,6 @@ function(input, output, session) {
           ', equip_loyer, confort_score_corr))
           
         } else if (input$varGroup == "equipements") {
-          # Analyse des installations sanitaires
           sdb_wc <- round(cor_mat["NbSDB", "NbWC"], 2)
           sdb_cuis <- round(cor_mat["NbSDB", "NbCuis"], 2)
           wc_cuis <- round(cor_mat["NbWC", "NbCuis"], 2)
@@ -843,7 +795,6 @@ function(input, output, session) {
           ', sdb_wc, sdb_cuis, wc_cuis))
           
         } else if (input$varGroup == "surface") {
-          # Analyse des facteurs de surface
           surf_terrain_habitable <- round(cor_mat["SurfTerrain", "SurfHabitable"], 2)
           surf_terrain_pieceresid <- round(cor_mat["SurfTerrain", "SurfPiecResid"], 2)
           surf_habitable_pieceresid <- round(cor_mat["SurfHabitable", "SurfPiecResid"], 2)
@@ -860,7 +811,6 @@ function(input, output, session) {
           ', surf_terrain_habitable, surf_terrain_pieceresid, surf_habitable_pieceresid, ratio_terrain))
           
         } else if (input$varGroup == "confort") {
-          # Importance du standing
           confort_standing <- round(cor_mat["ConfortScore", "Standing"], 2)
           confort_etat <- round(cor_mat["ConfortScore", "Etat"], 2)
           standing_etat <- round(cor_mat["Standing", "Etat"], 2)
@@ -875,7 +825,6 @@ function(input, output, session) {
           ', confort_standing, confort_etat, standing_etat))
           
         } else if (input$varGroup == "localisation") {
-          # Relations entre les critères de localisation
           dist_bordmer <- round(cor_mat["DistCtrVille", "BordMer"], 2)
           dist_commerc <- round(cor_mat["DistCtrVille", "Commerc"], 2)
           dist_quartier <- round(cor_mat["DistCtrVille", "Quartier"], 2)
@@ -919,7 +868,6 @@ function(input, output, session) {
           arrange(desc(value))
         y_label <- "Nombre de logements"
       }
-      # On trie les quartiers dans l'ordre décroissant pour l'affichage
       neighborhood_stats$Quartier <- factor(neighborhood_stats$Quartier, levels = neighborhood_stats$Quartier)
       p <- ggplot(neighborhood_stats, aes(x = Quartier, y = value)) +
         geom_bar(stat = "identity", fill = "#4682B4", color = "black", width = 0.8) +
@@ -935,7 +883,6 @@ function(input, output, session) {
       ggplotly(p)
     })
     
-    # Table de données
     output$dataTable <- renderDT({
       datatable(data, options = list(
         pageLength = 10,
