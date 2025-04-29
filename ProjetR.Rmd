@@ -548,15 +548,15 @@ corrplot(cor_matrix,
 * **SurfTerrain** : forte corrélation positive (**0.79**) ; cela signifie que plus la surface du terrain est grande, plus le loyer demandé est élevé.
 * **SurfHabitable** : forte corrélation positive (**0.74**) ; donc, plus la surface habitable est importante, plus le logement est cher.
 * **NbSDB (Nombre de salles de bain)** : corrélation positive (**0.70**) ; les logements avec davantage de salles de bain tendent à avoir un loyer plus élevé.
-* **NbChamBur (Nombre de chambres ou bureaux)** : corrélation positive (**0.66**) ; plus un logement propose d'espaces nuit ou de travail, plus son loyer augmente.
-* **NbSalonsSAM (Nombre de salons/salles à manger)** : corrélation positive (**0.72**) ; un logement avec plusieurs espaces de vie est plus valorisé en loyer.
+* **NbChamBur (Nombre de chambres ou bureaux)** : corrélation positive (**0.59**) ; plus un logement propose d'espaces nuit ou de travail, plus son loyer augmente.
+* **NbSalonsSAM (Nombre de salons/salles à manger)** : corrélation positive (**0.66**) ; un logement avec plusieurs espaces de vie est plus valorisé en loyer.
 
 <br>
 <p style="font-size: 24px;">Analyse des facteurs de qualité</p>
 <br>
 <p style="font-size: 18px; font-weight: bold;">Analyse des facteurs de qualité :</p>
 
-* **EquipementScore** : corrélation forte avec le loyer (**0.79**) ; un logement mieux équipé est associé à un loyer plus élevé.
+* **EquipementScore** : corrélation forte avec le loyer (**0.76**) ; un logement mieux équipé est associé à un loyer plus élevé.
 * **ConfortScore** : corrélation très forte avec plusieurs variables clés (**> 0.90**) ; cela indique que le niveau de confort général impacte fortement la valeur locative.
 * Le **score de confort** est directement lié à la qualité de l'aménagement intérieur, comme le nombre de pièces et d'équipements.
 
@@ -566,13 +566,13 @@ corrplot(cor_matrix,
 <p style="font-size: 18px; font-weight: bold;">Analyse des relations entre variables :</p>
 
 * **Surface et organisation :**
-  * **SurfHabitable** et **NbPieces** : corrélation extrêmement forte (**0.99**) ; cela signifie que plus un logement est grand, plus il compte de pièces.
+  * **SurfHabitable** et **NbPieces** : corrélation extrêmement forte (**0.95**) ; cela signifie que plus un logement est grand, plus il compte de pièces.
   * **SurfHabitable** et **SurfTerrain** : forte corrélation (**0.83**) ; en général, un terrain plus vaste accueille une habitation plus grande.
   * **RatioHabitableTerrain** : corrélation négative avec la surface du terrain (**-0.63**) ; un ratio faible traduit souvent de grandes parcelles peu construites.
 
 * **Équipements :**
-  * **NbSDB** et **NbWC** : corrélation forte (**0.74**) ; les logements ayant plusieurs salles de bain disposent aussi généralement de plusieurs WC.
-  * **NbCuis (Nombre de cuisines)** : corrélation plus faible (**entre -0.22 et -0.36**) ; la variation du nombre de cuisines influence peu le reste des caractéristiques.
+  * **NbSDB** et **NbWC** : corrélation forte (**0.80**) ; les logements ayant plusieurs salles de bain disposent aussi généralement de plusieurs WC.
+  * **NbCuis (Nombre de cuisines)** : corrélation plus faible (**entre 0.27 et 0.13**) ; la variation du nombre de cuisines influence peu le reste des caractéristiques.
 
 * **Confort et qualité :**
   * **EquipementScore** : fortement corrélé à **SurfHabitable** (**0.79**) et à **NbPieces** (**0.77**) ; donc, plus un logement est spacieux et dispose de nombreuses pièces, plus il est bien équipé.
