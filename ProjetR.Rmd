@@ -602,7 +602,7 @@ corrplot(cor_matrix,
          number.cex = 0.7,      
          col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
          diag = FALSE,         
-         title = "Matrice de corrélation - Toutes les variables",
+         title = "Matrice de corrélation - surface et les pièces",
          mar = c(0,0,2,0))     
 ```
 
@@ -669,7 +669,7 @@ corrplot(cor_matrix,
          number.cex = 0.7,      
          col = colorRampPalette(c("#0073b7", "#ffffff", "#dc3545"))(100), 
          diag = FALSE,         
-         title = "Matrice de corrélation - Toutes les variables",
+         title = "Matrice de corrélation - équipements",
          mar = c(0,0,2,0))     
 ```
 
