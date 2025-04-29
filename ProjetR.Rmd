@@ -156,7 +156,7 @@ p <- ggplot(data = dataDakar, aes(x = "", y = Loyer, fill = "Loyer")) +
   geom_boxplot(color = "black") +
   labs(title = "Boîte à moustache loyers",
        x = "",
-       y = "Loyer",
+       y = "Loyer (Millier de FCFA)",
        fill = "Type de valeur") +  
   theme_minimal(base_size = 14) +
   theme(
@@ -401,7 +401,7 @@ RelationLoyerSurfHabitable <- ggplot(data = dataDakar,
                                       geom_smooth(method = "lm", color = "#4682B4") +
                                       labs(title = "Relation entre le Loyer et la surface Habitable",
                                          x = "SurfHabitables",
-                                         y = "Loyer") +
+                                         y = "Loyer (Millier de FCFA)") +
                                     theme_minimal(base_size = 14) +
                                     theme(
                                       plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
@@ -431,7 +431,7 @@ RelationLoyerNbPiece <- ggplot(data = dataDakar,
                               geom_smooth(method = "lm", color = "#4682B4") +
                               labs(title = "Relation entre le Loyer et le nombre de pièces",
                                    x = "NbPieces",
-                                   y = "Loyer") +
+                                   y = "Loyer (Millier de FCFA)") +
                               theme_minimal(base_size = 14) +
                               theme(
                                 plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
@@ -460,7 +460,7 @@ LoyerType <- ggplot(data = dataDakar, aes(x = Type, y = Loyer, fill = factor(Typ
   geom_boxplot() +
   labs(title = "Relation entre le Loyer et Type",
        x = "Type",
-       y = "Loyer",
+       y = "Loyer (Millier de FCFA)",
        fill = "Type") +
   theme_minimal(base_size = 14) +
   theme(
@@ -487,7 +487,7 @@ LoyerStanding <- ggplot(data = dataDakar, aes(x = Standing, y = Loyer, fill = fa
   geom_boxplot() +
   labs(title = "Relation entre le Loyer et Standing",
        x = "Standing",
-       y = "Loyer",
+       y = "Loyer (Millier de FCFA)",
        fill = "Standing") +
   theme_minimal(base_size = 14) +
   theme(
@@ -887,7 +887,7 @@ LoyerMoyensQuartier <- ggplot(data = loyer_moyen_par_quartier,
                                     geom_col(fill = "#4682B4", color = "black", width = 0.8) +
                                     labs(title = "Analyse par quartier : Loyen moyen",
                                          x="Quartier",
-                                         y="Loyer moyen"
+                                         y="Loyer moyen (Millier de FCFA)"
                                          ) +
                                     theme_minimal(base_size = 14) +
                                     theme(

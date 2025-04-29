@@ -25,7 +25,7 @@ function(input, output, session) {
           data$dummy <- ""
           p <- ggplot(data, aes(x = dummy, y = Loyer, fill = "Loyer")) +
             geom_boxplot(color = "black") +
-            labs(title = "Boîte à moustache loyers", x = "", y = "Loyer", fill = "Type de valeur") +
+            labs(title = "Boîte à moustache loyers", x = "", y = "Loyer (Millier de FCFA)", fill = "Type de valeur") +
             theme_minimal(base_size = 14) +
             theme(
               plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
@@ -165,7 +165,7 @@ function(input, output, session) {
                 geom_smooth(method = "lm", color = "#4682B4") +
                 labs(title = "Relation entre le Loyer et la surface Habitable",
                      x = "SurfHabitables",
-                     y = "Loyer") +
+                     y = "Loyer (Millier de FCFA)") +
                 theme_minimal(base_size = 14) +
                 theme(
                     plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
@@ -183,7 +183,7 @@ function(input, output, session) {
                 geom_smooth(method = "lm", color = "#4682B4") +
                 labs(title = "Relation entre le Loyer et le nombre de pièces",
                      x = "NbPieces",
-                     y = "Loyer") +
+                     y = "Loyer (Millier de FCFA)") +
                 theme_minimal(base_size = 14) +
                 theme(
                     plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
@@ -200,7 +200,7 @@ function(input, output, session) {
                 geom_boxplot(color = "black") +
                 labs(title = "Loyer selon le type de logement",
                      x = "Type",
-                     y = "Loyer",
+                     y = "Loyer (Millier de FCFA)",
                      fill = "Type") +
                 theme_minimal(base_size = 14) +
                 theme(
@@ -217,7 +217,7 @@ function(input, output, session) {
                 geom_boxplot(color = "black") +
                 labs(title = "Loyer selon le standing",
                      x = "Standing",
-                     y = "Loyer",
+                     y = "Loyer (Millier de FCFA)",
                      fill = "Standing") +
                 theme_minimal(base_size = 14) +
                 theme(
@@ -236,7 +236,7 @@ function(input, output, session) {
                     geom_smooth(method = "lm", color = "#4682B4") +
                     labs(title = paste("Relation entre le Loyer et", input$rentVar),
                          x = input$rentVar,
-                         y = "Loyer") +
+                         y = "Loyer (Millier de FCFA)") +
                     theme_minimal(base_size = 14) +
                     theme(
                         plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
@@ -251,7 +251,7 @@ function(input, output, session) {
                     geom_boxplot(color = "black") +
                     labs(title = paste("Relation entre le Loyer et", input$rentVar),
                          x = input$rentVar,
-                         y = "Loyer",
+                         y = "Loyer (Millier de FCFA)",
                          fill = input$rentVar) +
                     theme_minimal(base_size = 14) +
                     theme(
@@ -905,7 +905,7 @@ function(input, output, session) {
           group_by(Quartier) %>%
           summarise(value = mean(Loyer, na.rm = TRUE)) %>%
           arrange(desc(value))
-        y_label <- "Loyer moyen"
+        y_label <- "Loyer moyen (Millier de FCFA)"
       } else if (input$neighborhoodVar == "surface_mean") {
         neighborhood_stats <- data %>%
           group_by(Quartier) %>%
