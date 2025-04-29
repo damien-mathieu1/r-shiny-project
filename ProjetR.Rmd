@@ -130,7 +130,7 @@ Loyers <- ggplot(data = dataDakar, aes(x = Loyer)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(Loyers)
+Loyers
 
 
 ```
@@ -167,9 +167,7 @@ p <- ggplot(data = dataDakar, aes(x = "", y = Loyer, fill = "Loyer")) +
   scale_fill_manual(values = "#4682B4") + 
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(p)
-
-
+p
 ```
 
 <br>
@@ -204,12 +202,12 @@ DistributionSurfTerrain <- ggplot(data = dataDakar, aes(x = SurfTerrain)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(DistributionSurfTerrain)
+DistributionSurfTerrain
 ```
 
 <br>
 <p style="text-indent: 20px;">
-  À Dakar, la plupart des terrains ont une superficie comprise entre <strong>66 m²</strong> et <strong>264 m²</strong>, avec une <strong>médiane de 101 m²</strong>. Cela signifie que la moitié des terrains font moins de 101 m². Les surfaces varient entre <strong>19 m²</strong> et <strong>988 m²</strong>, illustrant une grande diversité. La <strong>surface moyenne</strong> affichée sur le marché est d’environ <strong>805 m²</strong>, mais elle est largement influencée par quelques très grands terrains. Cette moyenne ne reflète donc pas fidèlement la réalité, où les petites surfaces sont bien plus fréquentes comme on peut le voir sur le graphique.
+  À Dakar, la plupart des terrains ont une superficie comprise entre <strong>66 m²</strong> et <strong>264 m²</strong>, avec une <strong>médiane de 101 m²</strong>. Cela signifie que la moitié des terrains font moins de 101 m². Les surfaces varient entre <strong>19 m²</strong> et <strong>988 m²</strong>, illustrant une grande diversité. La <strong>surface moyenne</strong> affichée sur le marché est d'environ <strong>805 m²</strong>, mais elle est largement influencée par quelques très grands terrains. Cette moyenne ne reflète donc pas fidèlement la réalité, où les petites surfaces sont bien plus fréquentes comme on peut le voir sur le graphique.
 </p>
 <br>
 
@@ -230,7 +228,7 @@ BoiteMoustacheSurfTerrain <- ggplot(data = dataDakar, aes(x = "", y = SurfTerrai
   scale_fill_manual(values = "#4682B4") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(BoiteMoustacheSurfTerrain)
+BoiteMoustacheSurfTerrain
 ```
 
 <br>
@@ -267,7 +265,7 @@ DistributionNbPieces <- ggplot(data = dataDakar, aes(x = NbPieces)) +
  )+
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(DistributionNbPieces)
+DistributionNbPieces
 ```
 
 <br>
@@ -302,7 +300,7 @@ BoiteMoustacheNbPieces <- ggplot(data = dataDakar, aes(x = "", y = NbPieces, fil
     limits = c(0, 22)
   )
 
-ggplotly(BoiteMoustacheNbPieces)
+BoiteMoustacheNbPieces
 ```
 
 <br>
@@ -333,7 +331,7 @@ DistributionSurfHabitables <- ggplot(data = dataDakar, aes(x = SurfHabitable)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(DistributionSurfHabitables)
+DistributionSurfHabitables
 ```
 
 <br>
@@ -365,7 +363,7 @@ BoiteMoustacheSurfHabitables <- ggplot(data = dataDakar, aes(x = "", y = SurfHab
     limits = c(0, 500)
   )
 
-ggplotly(BoiteMoustacheSurfHabitables)
+BoiteMoustacheSurfHabitables
 ```
 
 <br>
@@ -413,7 +411,7 @@ RelationLoyerSurfHabitable <- ggplot(data = dataDakar,
                                     scale_y_continuous(breaks = seq(0, max(dataDakar$Loyer), by = 250)) 
                                    
 
-ggplotly(RelationLoyerSurfHabitable)  
+RelationLoyerSurfHabitable
 ```
 
 ## __**Relation entre le loyer et le nombre de pièces**__
@@ -442,7 +440,7 @@ RelationLoyerNbPiece <- ggplot(data = dataDakar,
                                                  limits = c(0, max(dataDakar$NbPieces)))
                                    
 
-ggplotly(RelationLoyerNbPiece) 
+RelationLoyerNbPiece
 ```
 
 <br>
@@ -470,7 +468,7 @@ LoyerType <- ggplot(data = dataDakar, aes(x = Type, y = Loyer, fill = factor(Typ
   ) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(LoyerType)
+LoyerType
 
 
 ```
@@ -498,7 +496,7 @@ LoyerStanding <- ggplot(data = dataDakar, aes(x = Standing, y = Loyer, fill = fa
   ) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
-ggplotly(LoyerStanding)
+LoyerStanding
 
 ```
 <br>
@@ -896,7 +894,7 @@ LoyerMoyensQuartier <- ggplot(data = loyer_moyen_par_quartier,
                                       axis.text.y = element_text(size=10),
                                       axis.title = element_text(face = "bold", size=14)
                                       )
-ggplotly(LoyerMoyensQuartier)
+LoyerMoyensQuartier
 
 ```
 <br>
@@ -934,7 +932,7 @@ SurfaceMoyenneQuartier <- ggplot(data = loyer_moyen_par_quartier,
                                       axis.text.y = element_text(size=10),
                                       axis.title = element_text(face = "bold", size=14)
                                       )
-ggplotly(SurfaceMoyenneQuartier)
+SurfaceMoyenneQuartier
 
 ```
 <br>
@@ -963,7 +961,7 @@ NombreLogementsQuartiers <- ggplot(data = dataDakar,
                                       axis.text.y = element_text(size=10),
                                       axis.title = element_text(face = "bold", size=14)
                                       )
-ggplotly(NombreLogementsQuartiers)
+NombreLogementsQuartiers
       
 
 ```
