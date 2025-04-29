@@ -11,8 +11,7 @@ output:
     df_print: paged
 ---
 ```{r, echo=FALSE}
-dataDakar <- read.csv("/home/evan/Documents/dakar.csv")
-```
+dataDakar <- read.csv(file.path(getwd(), "dakar.csv"))
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
