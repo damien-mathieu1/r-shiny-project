@@ -209,7 +209,7 @@ ggplotly(DistributionSurfTerrain)
 
 <br>
 <p style="text-indent: 20px;">
-  À Dakar, la plupart des terrains ont une superficie comprise entre <strong>66 m²</strong> et <strong>264 m²</strong>, avec une <strong>médiane de 101 m²</strong>. Cela signifie que la moitié des terrains font moins de 101 m². Les surfaces varient entre <strong>19 m²</strong> et <strong>988 m²</strong>, illustrant une grande diversité. La <strong>surface moyenne</strong> affichée sur le marché est d’environ <strong>805 m²</strong>, mais elle est largement influencée par quelques très grands terrains. Cette moyenne ne reflète donc pas fidèlement la réalité, où les petites surfaces sont bien plus fréquentes.
+  À Dakar, la plupart des terrains ont une superficie comprise entre <strong>66 m²</strong> et <strong>264 m²</strong>, avec une <strong>médiane de 101 m²</strong>. Cela signifie que la moitié des terrains font moins de 101 m². Les surfaces varient entre <strong>19 m²</strong> et <strong>988 m²</strong>, illustrant une grande diversité. La <strong>surface moyenne</strong> affichée sur le marché est d’environ <strong>805 m²</strong>, mais elle est largement influencée par quelques très grands terrains. Cette moyenne ne reflète donc pas fidèlement la réalité, où les petites surfaces sont bien plus fréquentes comme on peut le voir sur le graphique.
 </p>
 <br>
 
@@ -383,7 +383,7 @@ ggplotly(BoiteMoustacheSurfHabitables)
 
 <p style="text-indent: 20px;"> L'analyse du loyer est cruciale pour comprendre les dynamiques du marché immobilier à Dakar. Elle permet d'identifier les facteurs influençant les prix, tels que la surface habitable, le nombre de pièces, le type de logement ou encore le standing. C'est pourquoi nous allons examiner l'impact de chacun de ces facteurs sur le loyer, afin de mieux comprendre leur influence sur les prix du marché.</p>
 
-## __**Relation entre le loyer et la sufrace habitable**__
+## __**Relation entre le loyer et la surface habitable**__
 
 <p style="text-indent: 20px;"> Ce graphique montre la relation entre la surface habitable et le loyer à Dakar. On voit clairement que, de manière générale, plus un logement est grand, plus le loyer est élevé. Cette tendance est bien représentée par la ligne droite qui suit la répartition des points. Autrement dit, la surface a un impact sur le prix du loyer.</p>
 
